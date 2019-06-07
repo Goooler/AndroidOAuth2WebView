@@ -47,7 +47,6 @@ You can start the OAuth2 Authorization Code Grant by following these steps:
                     Log.d("Login", "Success")
                 }
             )
-        }
     ```
 4. On a successfull login you can access and use the Access Token anywhere:
     ```kotlin
