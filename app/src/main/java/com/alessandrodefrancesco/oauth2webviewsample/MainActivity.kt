@@ -6,11 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.alessandrodefrancesco.oauth2webview.OAuth2AccessToken
+import com.alessandrodefrancesco.oauth2webviewsample.databinding.ActivityMainBinding
 import com.alessandrodefrancesco.oauth2webviewsample.models.InstagramBaseResponse
 import com.alessandrodefrancesco.oauth2webviewsample.models.InstagramUser
 import com.alessandrodefrancesco.utils.LoggingInterceptor
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -19,6 +19,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
 
     companion object {
         fun newIntent(context: Context): Intent {
@@ -44,7 +45,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         MyApplication.accessTokenManager.retrieveValidAccessToken { result ->
             result.onSuccess { storedToken ->
@@ -73,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showUserInfo(userInfo: InstagramUser) {
-        username.text = userInfo.username
-        fullName.text = userInfo.fullName
+        binding.username.text = userInfo.username
+        binding.fullName.text = userInfo.fullName
     }
 }

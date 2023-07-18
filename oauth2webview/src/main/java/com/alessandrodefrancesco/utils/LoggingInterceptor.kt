@@ -26,7 +26,7 @@ class LoggingInterceptor : Interceptor {
             val request: Request = chain.request()
 
             val t1 = System.nanoTime()
-            var requestLog = "\n${request.method().toUpperCase()} (${dateFormatter.format(Date())}) ${request.url()}"
+            var requestLog = "\n${request.method().uppercase(Locale.getDefault())} (${dateFormatter.format(Date())}) ${request.url()}"
             if (request.body() != null) {
                 requestLog += "\nWith body: ${bodyToString(request)}"
             }
