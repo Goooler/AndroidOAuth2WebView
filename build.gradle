@@ -1,4 +1,6 @@
 import com.android.build.gradle.BasePlugin
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
     repositories {
@@ -23,7 +25,17 @@ allprojects {
             defaultConfig {
                 minSdk 21
             }
+            // Can remove this once https://issuetracker.google.com/issues/260059413 is fixed.
+            // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
+            compileOptions {
+                sourceCompatibility JavaVersion.VERSION_1_8
+                targetCompatibility JavaVersion.VERSION_1_8
+            }
         }
+    }
+
+    tasks.withType(KotlinCompile).configureEach {
+        compilerOptions.jvmTarget = JvmTarget.JVM_1_8
     }
 }
 
