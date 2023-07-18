@@ -4,17 +4,17 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
-import com.alessandrodefrancesco.oauth2webviewsample.MyApplication.Companion.accessTokenManager
-import kotlinx.android.synthetic.main.activity_login.*
+import com.alessandrodefrancesco.oauth2webviewsample.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
-
+    private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        MyApplication.accessTokenManager.setUpWebView(webView,
+        MyApplication.accessTokenManager.setUpWebView(binding.webView,
             loginFail = {
                 Log.d("Login", "Failure")
                 Toast.makeText(this, "LOGIN FAILURE", Toast.LENGTH_SHORT).show()
