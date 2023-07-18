@@ -22,7 +22,7 @@ class MyApplication: Application() {
         val storageSharedPreferences = OAuth2AccessTokenStorageSharedPreferences(sharedPreferences)
         accessTokenManager = OAuth2AccessTokenManager(
             storage = storageSharedPreferences,
-            authorizationServerBaseURL = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+            authorizationServerBaseURL = "https://login.microsoftonline.com/common/oauth2/v2.0/",
             clientID = CLIENT_ID,
             clientSecret = CLIENT_SECRET,
             redirectURI = REDIRECT_URI,
@@ -30,7 +30,7 @@ class MyApplication: Application() {
                 "https://outlook.office.com/IMAP.AccessAsUser.All",
                 "https://outlook.office.com/SMTP.Send",
                 "offline_access",
-            ).joinToString()
+            ).joinToString(" ")
         )
 
         accessTokenManager.DEBUG = true
