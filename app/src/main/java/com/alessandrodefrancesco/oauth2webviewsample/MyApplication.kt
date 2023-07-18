@@ -10,9 +10,9 @@ class MyApplication: Application() {
     companion object {
         lateinit var accessTokenManager: OAuth2AccessTokenManager
 
-        const val CLIENT_ID = "CLIENT_ID"
+        const val CLIENT_ID = "e647013a-ada4-4114-b419-e43d250f99c5"
         const val CLIENT_SECRET = "CLIENT_SECRET"
-        const val REDIRECT_URI = "http://samplecallback.com/"
+        const val REDIRECT_URI = "msauth://com.fsck.k9.debug/VZF2DYuLYAu4TurFd6usQB2JPts%3D"
     }
 
     override fun onCreate() {
@@ -22,11 +22,15 @@ class MyApplication: Application() {
         val storageSharedPreferences = OAuth2AccessTokenStorageSharedPreferences(sharedPreferences)
         accessTokenManager = OAuth2AccessTokenManager(
             storage = storageSharedPreferences,
-            authorizationServerBaseURL = "https://api.instagram.com/oauth/",
+            authorizationServerBaseURL = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
             clientID = CLIENT_ID,
             clientSecret = CLIENT_SECRET,
             redirectURI = REDIRECT_URI,
-            scope = "basic"
+            scope = listOf(
+                "https://outlook.office.com/IMAP.AccessAsUser.All",
+                "https://outlook.office.com/SMTP.Send",
+                "offline_access",
+            ).joinToString()
         )
 
         accessTokenManager.DEBUG = true
