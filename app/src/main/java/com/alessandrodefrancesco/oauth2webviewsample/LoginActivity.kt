@@ -1,7 +1,7 @@
 package com.alessandrodefrancesco.oauth2webviewsample
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 import com.alessandrodefrancesco.oauth2webviewsample.MyApplication.Companion.accessTokenManager
