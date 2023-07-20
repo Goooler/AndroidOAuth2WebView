@@ -2,7 +2,7 @@ package com.alessandrodefrancesco.oauth2webview
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
-import java.util.*
+import java.util.Calendar
 
 /**
  * Represents an OAuth2 AccessToken response received from the Authorization Server as described in [https://tools.ietf.org/html/rfc6749#section-5.1](https://tools.ietf.org/html/rfc6749#section-5.1).
