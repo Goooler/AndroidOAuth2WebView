@@ -13,6 +13,7 @@ class MyApplication : Application() {
         // https://github.com/thundernest/k-9/blob/c781e7032d72e8dc457c154bbea6473713861886/app/k9mail/build.gradle.kts#L143
         const val CLIENT_ID = "e647013a-ada4-4114-b419-e43d250f99c5"
         const val CLIENT_SECRET = "CLIENT_SECRET"
+
         // https://github.com/thundernest/k-9/blob/c781e7032d72e8dc457c154bbea6473713861886/app/k9mail/build.gradle.kts#L147
         const val REDIRECT_URI = "msauth://com.fsck.k9.debug/VZF2DYuLYAu4TurFd6usQB2JPts%3D"
     }
