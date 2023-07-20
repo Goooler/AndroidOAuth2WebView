@@ -4,7 +4,7 @@ This is a fork of [AlessandroDeFrancesco/AndroidOAuth2WebView](https://github.co
 
 The only external library used is Retrofit2 to make requests to the Authorization Server.
 
-Why not building on Chrome Custom Tabs like [uth0.Android](https://github.com/auth0/Auth0.Android)? Because its customization options are not as extensive as those of WebView.
+Why not building on Chrome Custom Tabs like [uth0.Android](https://github.com/auth0/Auth0.Android)? Because its customization options are not as extensive the WebView.
 
 ## Usage
 
