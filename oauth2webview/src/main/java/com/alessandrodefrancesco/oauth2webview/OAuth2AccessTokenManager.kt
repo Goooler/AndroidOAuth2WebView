@@ -50,7 +50,7 @@ class OAuth2AccessTokenManager(
     /**
      * The URL path of the OAuth2 service used to retrieve and refresh the access token
      */
-    var tokenPath = "access_token"
+    var tokenPath = "token"
 
     /**
      * The URL path of the OAuth2 service used to logout/invalidate the access token
@@ -185,7 +185,6 @@ class OAuth2AccessTokenManager(
         networkAPI.requestAccessToken(
             path = tokenPath,
             clientID = clientID,
-            clientSecret = clientSecret,
             redirectUri = redirectURI,
             code = code,
             grantType = "authorization_code",
@@ -270,18 +269,20 @@ class OAuth2AccessTokenManager(
         webView.webViewClient = object : WebViewClient() {
 
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                val code = request?.url?.getQueryParameter("code")
-                Log.d("OAuth2", "Redirecting to: ${request?.url}")
-                if (code != null) {
-                    exchangeAndSaveTokenUsingCode(code) { result ->
-                        result.onSuccess {
-                            loginSuccess()
+                if (request?.url.toString().startsWith(redirectURI)) {
+                    val code = request?.url?.getQueryParameter("code")
+                    Log.d("OAuth2", "Redirecting to: ${request?.url}")
+                    if (code != null) {
+                        exchangeAndSaveTokenUsingCode(code) { result ->
+                            result.onSuccess {
+                                loginSuccess()
+                            }
+                            result.onFailure {
+                                loginFail()
+                            }
                         }
-                        result.onFailure {
-                            loginFail()
-                        }
+                        return true
                     }
-                    return true
                 }
 
                 return super.shouldOverrideUrlLoading(view, request)
