@@ -2,10 +2,10 @@ package com.alessandrodefrancesco.oauth2webviewsample
 
 import android.app.Application
 import android.content.Context
-import com.alessandrodefrancesco.oauth2webview.OAuth2AccessTokenStorageSharedPreferences
 import com.alessandrodefrancesco.oauth2webview.OAuth2AccessTokenManager
+import com.alessandrodefrancesco.oauth2webview.OAuth2AccessTokenStorageSharedPreferences
 
-class MyApplication: Application() {
+class MyApplication : Application() {
 
     companion object {
         lateinit var accessTokenManager: OAuth2AccessTokenManager
@@ -26,7 +26,7 @@ class MyApplication: Application() {
             clientID = CLIENT_ID,
             clientSecret = CLIENT_SECRET,
             redirectURI = REDIRECT_URI,
-            scope = "basic"
+            scope = "basic",
         )
 
         accessTokenManager.DEBUG = true

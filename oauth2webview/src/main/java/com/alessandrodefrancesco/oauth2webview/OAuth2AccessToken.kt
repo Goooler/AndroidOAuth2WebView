@@ -41,7 +41,7 @@ data class OAuth2AccessToken(
      * expiration time via other means or document the default value.
      */
     @SerializedName("expires_in")
-    val expiresIn: Int? = null
+    val expiresIn: Int? = null,
 
 ) : Serializable {
 

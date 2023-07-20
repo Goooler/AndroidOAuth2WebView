@@ -10,11 +10,11 @@ data class InstagramUser(
     @SerializedName("bio") val bio: String,
     @SerializedName("website") val website: String,
     @SerializedName("is_business") val isBusiness: Boolean,
-    @SerializedName("counts") val counts: Counts
+    @SerializedName("counts") val counts: Counts,
 ) {
     data class Counts(
         @SerializedName("media") val media: Long,
         @SerializedName("follows") val follows: Long,
-        @SerializedName("followed_by") val followedby: Long
+        @SerializedName("followed_by") val followedby: Long,
     )
 }

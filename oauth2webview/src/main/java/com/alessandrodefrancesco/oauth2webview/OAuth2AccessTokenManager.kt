@@ -6,16 +6,16 @@ import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.google.gson.Gson
 import com.alessandrodefrancesco.utils.LoggingInterceptor
+import com.google.gson.Gson
+import java.net.URL
+import java.util.concurrent.CountDownLatch
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.net.URL
-import java.util.concurrent.CountDownLatch
 
 /**
  * Token manger used to handle all the access token needs, only Authorization Code Grant flow is supported [https://oauth.net/2/grant-types/authorization-code/](https://oauth.net/2/grant-types/authorization-code/).
@@ -37,7 +37,7 @@ class OAuth2AccessTokenManager(
     private val clientID: String,
     private val clientSecret: String,
     private val redirectURI: String,
-    private val scope: String?
+    private val scope: String?,
 ) {
 
     var DEBUG = false
@@ -46,10 +46,12 @@ class OAuth2AccessTokenManager(
      * The URL path of the OAuth2 service where there is the webpage to show to user
      */
     var authorizationPath = "authorize"
+
     /**
      * The URL path of the OAuth2 service used to retrieve and refresh the access token
      */
     var tokenPath = "access_token"
+
     /**
      * The URL path of the OAuth2 service used to logout/invalidate the access token
      */
@@ -63,7 +65,7 @@ class OAuth2AccessTokenManager(
             var builder = Retrofit.Builder()
             builder = builder.addConverterFactory(GsonConverterFactory.create(Gson()))
             builder = builder.baseUrl(authorizationServerBaseURL)
-            if(DEBUG){
+            if (DEBUG) {
                 val client = OkHttpClient.Builder().addInterceptor(LoggingInterceptor()).build()
                 builder = builder.client(client)
             }
@@ -71,7 +73,6 @@ class OAuth2AccessTokenManager(
             val retrofit = builder.build()
             return retrofit.create(OAuth2Api::class.java)
         }
-
 
     /**
      * The [URL] to show in a [WebView]
@@ -83,7 +84,7 @@ class OAuth2AccessTokenManager(
             .appendQueryParameter("redirect_uri", redirectURI)
             .appendQueryParameter("scope", scope)
             .appendQueryParameter("response_type", "code")
-            .build().toString()
+            .build().toString(),
     )
 
     /**
@@ -157,7 +158,7 @@ class OAuth2AccessTokenManager(
             clientID = clientID,
             clientSecret = clientSecret,
             redirectUri = redirectURI,
-            grantType = "refresh_token"
+            grantType = "refresh_token",
         ).enqueue(object : Callback<OAuth2AccessToken> {
             override fun onFailure(call: Call<OAuth2AccessToken>, t: Throwable) {
                 callback(Result.failure(t))
@@ -187,7 +188,7 @@ class OAuth2AccessTokenManager(
             clientSecret = clientSecret,
             redirectUri = redirectURI,
             code = code,
-            grantType = "authorization_code"
+            grantType = "authorization_code",
         ).enqueue(object : Callback<OAuth2AccessToken> {
             override fun onFailure(call: Call<OAuth2AccessToken>, t: Throwable) {
                 callback(Result.failure(t))
@@ -225,7 +226,7 @@ class OAuth2AccessTokenManager(
                 path = logoutPath,
                 clientID = clientID,
                 clientSecret = clientSecret,
-                refreshToken = refreshedToken
+                refreshToken = refreshedToken,
             )
                 .enqueue(object : Callback<Any?> {
                     override fun onFailure(call: Call<Any?>, t: Throwable) {
@@ -291,5 +292,4 @@ class OAuth2AccessTokenManager(
         val url = authorizationUrl.toString()
         webView.loadUrl(url)
     }
-
 }
