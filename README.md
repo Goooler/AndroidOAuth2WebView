@@ -1,23 +1,13 @@
 # Android OAuth2 Authorization Code Grant
-This Android library, inspired by [Heimdall](https://github.com/trivago/Heimdall.droid), wants to be the easiest and fastest setup of the OAuth2 Authorization Code Grant flow for an Android application.
+
+This is a fork of [AlessandroDeFrancesco/AndroidOAuth2WebView](https://github.com/AlessandroDeFrancesco/AndroidOAuth2WebView), wants to be the easiest and fastest setup of the OAuth2 Authorization Code Grant flow for an Android application.
 
 The only external library used is Retrofit2 to make requests to the Authorization Server.
 
-## Requirements
-
-The Internet Access permission in the manifest
-```xml
-<manifest>
-    <uses-permission android:name="android.permission.INTERNET"/>
-
-    <application />
-    ...
-    </application>
-
-</manifest>
-```
+Why not building on Chrome Custom Tabs like [uth0.Android](https://github.com/auth0/Auth0.Android)? Because its customization options are not as extensive the WebView.
 
 ## Usage
+
 You can start the OAuth2 Authorization Code Grant by following these steps:
 
 1. Create an Activity/Fragment with a WebView
@@ -40,13 +30,13 @@ You can start the OAuth2 Authorization Code Grant by following these steps:
 3. Let the accessTokenManager set up the WebView
     ```kotlin
     accessTokenManager.setUpWebView(webView,
-                loginFail = {
-                    Log.e("Login", "Failure")
-                },
-                loginSuccess = {
-                    Log.d("Login", "Success")
-                }
-            )
+        loginFail = {
+            Log.e("Login", "Failure")
+        },
+        loginSuccess = {
+            Log.d("Login", "Success")
+        }
+    )
     ```
 4. On a successfull login you can access and use the Access Token anywhere:
     ```kotlin
@@ -76,7 +66,7 @@ The OAuth2AccessTokenManager uses OAuth2AccessTokenStorage to store and retrieve
 If the service that you're trying to access through OAuth 2 has different paths for the three operations needed for the authentication (Authorization, Access Token, Logout/Token Invalidation) you can provide new paths to:
 
 ```kotlin
- /**
+/**
 * The URL path of the OAuth2 service where there is the webpage to show to user
 */
 OAuth2AccessTokenManager.authorizationPath = "authorize"
