@@ -49,7 +49,7 @@ class OAuth2AccessTokenManager(
     /**
      * The URL path of the OAuth2 service used to retrieve and refresh the access token
      */
-    var tokenPath = "access_token"
+    var tokenPath = "token"
     /**
      * The URL path of the OAuth2 service used to logout/invalidate the access token
      */
