@@ -82,7 +82,7 @@ class OAuth2AccessTokenManager(
             .appendQueryParameter("client_id", clientID)
             .appendQueryParameter("redirect_uri", redirectURI)
             .appendQueryParameter("scope", scope)
-            .appendQueryParameter("response_type", "code")
+            .appendQueryParameter("response_type", "token")
             .build().toString()
     )
 
