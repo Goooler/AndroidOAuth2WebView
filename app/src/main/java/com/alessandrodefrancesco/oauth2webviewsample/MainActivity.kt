@@ -2,9 +2,9 @@ package com.alessandrodefrancesco.oauth2webviewsample
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.alessandrodefrancesco.oauth2webview.OAuth2AccessToken
 import com.alessandrodefrancesco.oauth2webviewsample.databinding.ActivityMainBinding
 import com.alessandrodefrancesco.oauth2webviewsample.models.InstagramBaseResponse
@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -57,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun requestUserInfo(storedToken: OAuth2AccessToken) {
         val accessToken = storedToken.accessToken
-        if (accessToken != null)
+        if (accessToken != null) {
             instagramAPI.getUserInfo(accessToken).enqueue(object : Callback<InstagramBaseResponse<InstagramUser>> {
                 override fun onFailure(call: Call<InstagramBaseResponse<InstagramUser>>, t: Throwable) {
                     Log.e("MainActivity", "Error: " + t.localizedMessage)
@@ -72,6 +71,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             })
+        }
     }
 
     private fun showUserInfo(userInfo: InstagramUser) {

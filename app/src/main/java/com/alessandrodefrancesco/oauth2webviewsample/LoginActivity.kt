@@ -1,9 +1,9 @@
 package com.alessandrodefrancesco.oauth2webviewsample
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.alessandrodefrancesco.oauth2webviewsample.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
@@ -14,7 +14,8 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        MyApplication.accessTokenManager.setUpWebView(binding.webView,
+        MyApplication.accessTokenManager.setUpWebView(
+            binding.webView,
             loginFail = {
                 Log.d("Login", "Failure")
                 Toast.makeText(this, "LOGIN FAILURE", Toast.LENGTH_SHORT).show()
@@ -26,7 +27,7 @@ class LoginActivity : AppCompatActivity() {
 
                 startActivity(MainActivity.newIntent(this))
                 finish()
-            }
+            },
         )
     }
 }

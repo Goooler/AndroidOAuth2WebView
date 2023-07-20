@@ -8,20 +8,20 @@ data class InstagramBaseResponse<DataType>(
     @SerializedName("data")
     val data: DataType?,
     @SerializedName("pagination")
-    val pagination: Pagination?
-){
-    data class Meta (
+    val pagination: Pagination?,
+) {
+    data class Meta(
         @SerializedName("code")
         val code: Int,
         @SerializedName("error_type")
         val errorType: String?,
         @SerializedName("error_message")
-        val errorMessage: String?
+        val errorMessage: String?,
     )
-    data class Pagination (
+    data class Pagination(
         @SerializedName("next_url")
         val nextUrl: Int,
         @SerializedName("next_max_id")
-        val nextMaxId: String?
+        val nextMaxId: String?,
     )
 }
