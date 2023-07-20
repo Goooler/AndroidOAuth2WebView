@@ -269,18 +269,20 @@ class OAuth2AccessTokenManager(
         webView.webViewClient = object : WebViewClient() {
 
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                val code = request?.url?.getQueryParameter("code")
-                Log.d("OAuth2", "Redirecting to: ${request?.url}")
-                if (code != null) {
-                    exchangeAndSaveTokenUsingCode(code) { result ->
-                        result.onSuccess {
-                            loginSuccess()
+                if(request?.url.toString().startsWith(redirectURI)) {
+                    val code = request?.url?.getQueryParameter("code")
+                    Log.d("OAuth2", "Redirecting to: ${request?.url}")
+                    if (code != null) {
+                        exchangeAndSaveTokenUsingCode(code) { result ->
+                            result.onSuccess {
+                                loginSuccess()
+                            }
+                            result.onFailure {
+                                loginFail()
+                            }
                         }
-                        result.onFailure {
-                            loginFail()
-                        }
+                        return true
                     }
-                    return true
                 }
 
                 return super.shouldOverrideUrlLoading(view, request)
