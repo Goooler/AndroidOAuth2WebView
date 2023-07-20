@@ -10,15 +10,16 @@ import com.google.gson.Gson
  * @property mSharedPreferences The shared preferences used for saving the access token.
  */
 class OAuth2AccessTokenStorageSharedPreferences(
-    private val mSharedPreferences: SharedPreferences
-): OAuth2AccessTokenStorage {
+    private val mSharedPreferences: SharedPreferences,
+) : OAuth2AccessTokenStorage {
 
     override fun getStoredAccessToken(): OAuth2AccessToken? {
         val storedJson = mSharedPreferences.getString(ACCESS_TOKEN_PREFERENCES_KEY, null)
-        return if (storedJson != null)
+        return if (storedJson != null) {
             Gson().fromJson(storedJson, OAuth2AccessToken::class.java)
-        else
+        } else {
             null
+        }
     }
 
     override fun storeAccessToken(accessToken: OAuth2AccessToken) {

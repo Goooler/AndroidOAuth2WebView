@@ -2,15 +2,16 @@ package com.alessandrodefrancesco.utils
 
 import android.util.Log
 import com.google.gson.Gson
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okio.Buffer
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 class LoggingInterceptor : Interceptor {
     companion object {
@@ -45,7 +46,7 @@ class LoggingInterceptor : Interceptor {
             return response.newBuilder()
                 .body(ResponseBody.create(response.body()!!.contentType(), bodyString))
                 .build()
-        }catch (e:Exception){
+        } catch (e: Exception) {
             Log.e(TAG, "" + e.localizedMessage)
             return chain.proceed(chain.request())
         }

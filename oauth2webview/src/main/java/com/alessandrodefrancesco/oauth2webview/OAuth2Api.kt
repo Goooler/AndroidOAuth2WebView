@@ -19,7 +19,7 @@ interface OAuth2Api {
         @Field("client_secret") clientSecret: String,
         @Field("code") code: String,
         @Field("redirect_uri")redirectUri: String,
-        @Field("grant_type") grantType: String
+        @Field("grant_type") grantType: String,
     ): Call<OAuth2AccessToken>
 
     @FormUrlEncoded
@@ -30,7 +30,7 @@ interface OAuth2Api {
         @Field("client_id") clientID: String,
         @Field("client_secret") clientSecret: String,
         @Field("redirect_uri")redirectUri: String,
-        @Field("grant_type") grantType: String
+        @Field("grant_type") grantType: String,
     ): Call<OAuth2AccessToken>
 
     @FormUrlEncoded
@@ -39,6 +39,6 @@ interface OAuth2Api {
         @Path("path") path: String,
         @Field("client_id") clientID: String,
         @Field("client_secret") clientSecret: String,
-        @Field("refresh_token") refreshToken: String
+        @Field("refresh_token") refreshToken: String,
     ): Call<Any?>
 }
