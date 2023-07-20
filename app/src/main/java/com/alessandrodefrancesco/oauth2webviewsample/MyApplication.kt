@@ -30,7 +30,7 @@ class MyApplication : Application() {
                 "https://outlook.office.com/IMAP.AccessAsUser.All",
                 "https://outlook.office.com/SMTP.Send",
                 "offline_access",
-            ).joinToString(" ")
+            ).joinToString(" "),
         )
 
         accessTokenManager.DEBUG = true
