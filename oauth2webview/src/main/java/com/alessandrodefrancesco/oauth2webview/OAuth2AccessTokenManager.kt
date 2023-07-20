@@ -184,7 +184,6 @@ class OAuth2AccessTokenManager(
         networkAPI.requestAccessToken(
             path = tokenPath,
             clientID = clientID,
-            clientSecret = clientSecret,
             redirectUri = redirectURI,
             code = code,
             grantType = "authorization_code"
