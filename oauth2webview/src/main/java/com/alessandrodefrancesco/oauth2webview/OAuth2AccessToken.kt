@@ -14,14 +14,14 @@ data class OAuth2AccessToken(
      * Value is case insensitive.
      */
     @SerializedName("token_type")
-    val tokenType: String? = null,
+    val tokenType: String?,
 
     /**
      * REQUIRED
      * The access token issued by the authorization server.
      */
     @SerializedName("access_token")
-    val accessToken: String? = null,
+    val accessToken: String?,
 
     /**
      * OPTIONAL
@@ -30,7 +30,12 @@ data class OAuth2AccessToken(
      * in [https://tools.ietf.org/html/rfc6749#section-6](https://tools.ietf.org/html/rfc6749#section-6).
      */
     @SerializedName("refresh_token")
-    val refreshToken: String? = null,
+    val refreshToken: String?,
+
+    /**
+     * OPTIONAL
+     */
+    val scope: String?,
 
     /**
      * RECOMMENDED
@@ -41,22 +46,23 @@ data class OAuth2AccessToken(
      * expiration time via other means or document the default value.
      */
     @SerializedName("expires_in")
-    val expiresIn: Int? = null,
+    val expiresIn: Int,
+
+    /**
+     * OPTIONAL
+     */
+    @SerializedName("ext_expires_in")
+    val extExpiresIn: Int,
 
 ) : Serializable {
 
     /**
      * The expiration date of the token, calculated from [expiresIn].
      */
-    @SerializedName("expiration_date")
-    val expirationDate: Calendar?
-
-    init {
-        if (expiresIn == null) {
-            expirationDate = null
-        } else {
-            expirationDate = Calendar.getInstance().apply { add(Calendar.SECOND, expiresIn) }
-        }
+    val expirationDate: Calendar? get() = if (expiresIn == 0) {
+        null
+    } else {
+        Calendar.getInstance().apply { add(Calendar.SECOND, expiresIn) }
     }
 
     /**
