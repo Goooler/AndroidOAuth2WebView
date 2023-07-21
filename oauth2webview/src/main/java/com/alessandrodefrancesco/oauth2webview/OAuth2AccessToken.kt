@@ -43,6 +43,17 @@ data class OAuth2AccessToken(
     @SerializedName("expires_in")
     val expiresIn: Int? = null,
 
+    /**
+     * OPTIONAL
+     */
+    @SerializedName("ext_expires_in")
+    val extExpiresIn: Int? = null,
+
+    /**
+     * OPTIONAL
+     */
+    val scope: String? = null,
+
 ) : Serializable {
 
     /**
