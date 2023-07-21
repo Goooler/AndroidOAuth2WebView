@@ -14,14 +14,14 @@ data class OAuth2AccessToken(
      * Value is case insensitive.
      */
     @SerializedName("token_type")
-    val tokenType: String? = null,
+    val tokenType: String?,
 
     /**
      * REQUIRED
      * The access token issued by the authorization server.
      */
     @SerializedName("access_token")
-    val accessToken: String? = null,
+    val accessToken: String?,
 
     /**
      * OPTIONAL
@@ -30,12 +30,12 @@ data class OAuth2AccessToken(
      * in [https://tools.ietf.org/html/rfc6749#section-6](https://tools.ietf.org/html/rfc6749#section-6).
      */
     @SerializedName("refresh_token")
-    val refreshToken: String? = null,
+    val refreshToken: String?,
 
     /**
      * OPTIONAL
      */
-    val scope: String? = null,
+    val scope: String?,
 
     /**
      * RECOMMENDED
@@ -46,13 +46,13 @@ data class OAuth2AccessToken(
      * expiration time via other means or document the default value.
      */
     @SerializedName("expires_in")
-    val expiresIn: Int = 0,
+    val expiresIn: Int,
 
     /**
      * OPTIONAL
      */
     @SerializedName("ext_expires_in")
-    val extExpiresIn: Int = 0,
+    val extExpiresIn: Int,
 
 ) : Serializable {
 
