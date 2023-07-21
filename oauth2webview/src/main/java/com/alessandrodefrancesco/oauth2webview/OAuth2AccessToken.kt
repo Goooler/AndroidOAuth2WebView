@@ -59,15 +59,10 @@ data class OAuth2AccessToken(
     /**
      * The expiration date of the token, calculated from [expiresIn].
      */
-    @SerializedName("expiration_date")
-    val expirationDate: Calendar?
-
-    init {
-        if (expiresIn == null) {
-            expirationDate = null
-        } else {
-            expirationDate = Calendar.getInstance().apply { add(Calendar.SECOND, expiresIn) }
-        }
+    val expirationDate: Calendar? = if (expiresIn == null) {
+        null
+    } else {
+        Calendar.getInstance().apply { add(Calendar.SECOND, expiresIn) }
     }
 
     /**
