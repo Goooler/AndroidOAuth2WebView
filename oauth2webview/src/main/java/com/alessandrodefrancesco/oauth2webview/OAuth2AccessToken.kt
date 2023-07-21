@@ -41,13 +41,13 @@ data class OAuth2AccessToken(
      * expiration time via other means or document the default value.
      */
     @SerializedName("expires_in")
-    val expiresIn: Int? = null,
+    val expiresIn: Int = 0,
 
     /**
      * OPTIONAL
      */
     @SerializedName("ext_expires_in")
-    val extExpiresIn: Int? = null,
+    val extExpiresIn: Int = 0,
 
     /**
      * OPTIONAL
@@ -59,7 +59,7 @@ data class OAuth2AccessToken(
     /**
      * The expiration date of the token, calculated from [expiresIn].
      */
-    val expirationDate: Calendar? = if (expiresIn == null) {
+    val expirationDate: Calendar? = if (expiresIn == 0) {
         null
     } else {
         Calendar.getInstance().apply { add(Calendar.SECOND, expiresIn) }
