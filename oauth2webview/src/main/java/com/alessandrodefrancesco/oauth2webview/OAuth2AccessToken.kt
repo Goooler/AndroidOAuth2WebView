@@ -33,6 +33,11 @@ data class OAuth2AccessToken(
     val refreshToken: String? = null,
 
     /**
+     * OPTIONAL
+     */
+    val scope: String? = null,
+
+    /**
      * RECOMMENDED
      * The lifetime in seconds of the access token.  For
      * example, the value "3600" denotes that the access token will
@@ -49,17 +54,12 @@ data class OAuth2AccessToken(
     @SerializedName("ext_expires_in")
     val extExpiresIn: Int = 0,
 
-    /**
-     * OPTIONAL
-     */
-    val scope: String? = null,
-
 ) : Serializable {
 
     /**
      * The expiration date of the token, calculated from [expiresIn].
      */
-    val expirationDate: Calendar? = if (expiresIn == 0) {
+    val expirationDate: Calendar? get() = if (expiresIn == 0) {
         null
     } else {
         Calendar.getInstance().apply { add(Calendar.SECOND, expiresIn) }
