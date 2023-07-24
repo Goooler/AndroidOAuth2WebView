@@ -37,7 +37,7 @@ class OAuth2AccessTokenManager(
     /**
      * The [URL] to show in a [WebView]
      */
-    val authorizationUrl: URL = URL(
+    private val authorizationUrl = URL(
         Uri.parse(authorizationEndpoint)
             .buildUpon()
             .appendQueryParameter("client_id", clientId)
