@@ -7,6 +7,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import java.net.URL
 import java.util.concurrent.CountDownLatch
+import okhttp3.OkHttpClient
 
 /**
  * Token manger used to handle all the access token needs, only Authorization Code Grant flow is supported [https://oauth.net/2/grant-types/authorization-code/](https://oauth.net/2/grant-types/authorization-code/).
@@ -29,8 +30,9 @@ class OAuth2AccessTokenManager(
     private val clientSecret: String?,
     private val redirectUri: String,
     private val scope: String?,
+    client: OkHttpClient = OkHttpClient(),
 ) {
-    private val oAuth2Api = OAuth2Api()
+    private val oAuth2Api = OAuth2Api(client)
 
     var DEBUG = false
 

@@ -14,8 +14,7 @@ import okhttp3.Response
 /**
  * OkHttp API to communicate with the Authorization Server
  */
-class OAuth2Api {
-    private val client = OkHttpClient()
+class OAuth2Api(private val client: OkHttpClient) {
     private val mediaType = "application/json; charset=utf-8".toMediaType()
     private val gson = Gson()
 
