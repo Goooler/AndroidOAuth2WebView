@@ -1,11 +1,11 @@
 package io.goooler.oauth2webview
 
 import com.google.gson.Gson
-import java.io.IOException
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import java.io.IOException
 
 /**
  * Retrofit API to communicate with the Authorization Server
@@ -22,13 +22,10 @@ object OAuth2Api {
         code: String,
         redirectUri: String,
         grantType: String,
-    ): Result<OAuth2AccessToken> {
+        callback: (Result<OAuth2AccessToken>) -> Unit,
+    ) {
         val json = createRequestBodyString(clientId, clientSecret, code, redirectUri, grantType, null)
-        return runCatching {
-            post(url, json).let {
-                gson.fromJson(it, OAuth2AccessToken::class.java)
-            }
-        }
+        post(url, json, callback)
     }
 
     fun requestNewAccessToken(
@@ -38,7 +35,8 @@ object OAuth2Api {
         redirectUri: String,
         grantType: String,
         refreshToken: String,
-    ): Result<OAuth2AccessToken> {
+        callback: (Result<OAuth2AccessToken>) -> Unit,
+    ) {
         val json = createRequestBodyString(
             clientId,
             clientSecret,
@@ -47,23 +45,29 @@ object OAuth2Api {
             grantType,
             refreshToken,
         )
-        return runCatching {
-            post(url, json).let {
-                gson.fromJson(it, OAuth2AccessToken::class.java)
-            }
-        }
+        post(url, json, callback)
     }
 
 
-    private fun post(url: String, json: String): String? {
+    private fun post(url: String, json: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
         val body: RequestBody = RequestBody.create(mediaType, json)
         val request: Request = Request.Builder()
             .url(url)
             .post(body)
             .build()
-        client.newCall(request).execute().use { response ->
-            return response.body()!!.string()
-        }
+        client.newCall(request).enqueue(
+            object : okhttp3.Callback {
+                override fun onFailure(call: okhttp3.Call, e: IOException) {
+                    callback(Result.failure(e))
+                }
+
+                override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                    val bean =
+                        gson.fromJson(response.body()!!.string(), OAuth2AccessToken::class.java)
+                    callback(Result.success(bean))
+                }
+            },
+        )
     }
 
     private fun createRequestBodyString(
