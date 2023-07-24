@@ -3,11 +3,13 @@ package io.goooler.oauth2webview
 import com.google.gson.Gson
 import java.io.IOException
 import java.lang.Exception
+import okhttp3.Call
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 
 /**
  * OkHttp API to communicate with the Authorization Server
@@ -58,11 +60,11 @@ class OAuth2Api {
             .build()
         client.newCall(request).enqueue(
             object : okhttp3.Callback {
-                override fun onFailure(call: okhttp3.Call, e: IOException) {
+                override fun onFailure(call: Call, e: IOException) {
                     callback(Result.failure(e))
                 }
 
-                override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                override fun onResponse(call: Call, response: Response) {
                     if (response.isSuccessful && response.body != null) {
                         val bean = gson.fromJson(response.body!!.string(), OAuth2AccessToken::class.java)
                         callback(Result.success(bean))
