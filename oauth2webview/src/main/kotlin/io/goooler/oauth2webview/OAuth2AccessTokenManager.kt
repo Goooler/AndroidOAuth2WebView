@@ -23,18 +23,18 @@ import retrofit2.converter.gson.GsonConverterFactory
  * and use [retrieveValidAccessToken] when in need of the access token
  *
  * @param storage an [OAuth2AccessTokenStorage] implementation that will store the access token securely
- * @param clientID the client ID as in the specifications [https://tools.ietf.org/html/rfc6749#section-2.3.1](https://tools.ietf.org/html/rfc6749#section-2.3.1)
+ * @param clientId the client ID as in the specifications [https://tools.ietf.org/html/rfc6749#section-2.3.1](https://tools.ietf.org/html/rfc6749#section-2.3.1)
  * @param clientSecret the client Secret as in the specifications [https://tools.ietf.org/html/rfc6749#section-2.3.1](https://tools.ietf.org/html/rfc6749#section-2.3.1)
- * @param redirectURI the redirectURI as in the specifications [https://tools.ietf.org/html/rfc6749#section-3.1.2](https://tools.ietf.org/html/rfc6749#section-3.1.2)
+ * @param redirectUri the redirectURI as in the specifications [https://tools.ietf.org/html/rfc6749#section-3.1.2](https://tools.ietf.org/html/rfc6749#section-3.1.2)
  * @param scope the scope as in the specifications [https://tools.ietf.org/html/rfc6749#section-3.3](https://tools.ietf.org/html/rfc6749#section-3.3)
  */
 class OAuth2AccessTokenManager(
     private val storage: OAuth2AccessTokenStorage,
     private val authorizationEndpoint: String,
     private val tokenEndpoint: String,
-    private val clientID: String,
-    private val clientSecret: String,
-    private val redirectURI: String,
+    private val clientId: String,
+    private val clientSecret: String?,
+    private val redirectUri: String,
     private val scope: String?,
 ) {
 
@@ -61,8 +61,8 @@ class OAuth2AccessTokenManager(
     val authorizationUrl = URL(
         Uri.parse(authorizationServerBaseURL + authorizationPath)
             .buildUpon()
-            .appendQueryParameter("client_id", clientID)
-            .appendQueryParameter("redirect_uri", redirectURI)
+            .appendQueryParameter("client_id", clientId)
+            .appendQueryParameter("redirect_uri", redirectUri)
             .appendQueryParameter("scope", scope)
             .appendQueryParameter("response_type", "code")
             .build().toString(),
@@ -136,9 +136,9 @@ class OAuth2AccessTokenManager(
         oAuth2Api.requestNewAccessToken(
             path = tokenPath,
             refreshToken = refreshToken,
-            clientID = clientID,
+            clientID = clientId,
             clientSecret = clientSecret,
-            redirectUri = redirectURI,
+            redirectUri = redirectUri,
             grantType = "refresh_token",
         ).enqueue(object : Callback<OAuth2AccessToken> {
             override fun onFailure(call: Call<OAuth2AccessToken>, t: Throwable) {
@@ -165,8 +165,8 @@ class OAuth2AccessTokenManager(
     fun exchangeAndSaveTokenUsingCode(code: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
         oAuth2Api.requestAccessToken(
             path = tokenPath,
-            clientID = clientID,
-            redirectUri = redirectURI,
+            clientID = clientId,
+            redirectUri = redirectUri,
             code = code,
             grantType = "authorization_code",
         ).enqueue(object : Callback<OAuth2AccessToken> {
@@ -204,7 +204,7 @@ class OAuth2AccessTokenManager(
         if (refreshedToken != null) {
             oAuth2Api.requestLogout(
                 path = logoutPath,
-                clientID = clientID,
+                clientID = clientId,
                 clientSecret = clientSecret,
                 refreshToken = refreshedToken,
             )
@@ -250,7 +250,7 @@ class OAuth2AccessTokenManager(
         webView.webViewClient = object : WebViewClient() {
 
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                if (request?.url.toString().startsWith(redirectURI)) {
+                if (request?.url.toString().startsWith(redirectUri)) {
                     val code = request?.url?.getQueryParameter("code")
                     Log.d("OAuth2", "Redirecting to: ${request?.url}")
                     if (code != null) {

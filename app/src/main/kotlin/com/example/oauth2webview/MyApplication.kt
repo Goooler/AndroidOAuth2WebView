@@ -27,9 +27,9 @@ class MyApplication : Application() {
             storage = storageSharedPreferences,
             // https://github.com/thundernest/k-9/blob/00148f1a9939c5d2aa82013007a5386f0b03cab3/app/k9mail/src/main/java/com/fsck/k9/auth/AppOAuthConfigurationFactory.kt#L53-L54
             authorizationServerBaseURL = "https://login.microsoftonline.com/common/oauth2/v2.0/",
-            clientID = CLIENT_ID,
+            clientId = CLIENT_ID,
             clientSecret = CLIENT_SECRET,
-            redirectURI = REDIRECT_URI,
+            redirectUri = REDIRECT_URI,
             // https://github.com/thundernest/k-9/blob/00148f1a9939c5d2aa82013007a5386f0b03cab3/app/k9mail/src/main/java/com/fsck/k9/auth/AppOAuthConfigurationFactory.kt#L48-L52
             scope = listOf(
                 "https://outlook.office.com/IMAP.AccessAsUser.All",
