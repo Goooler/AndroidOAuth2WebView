@@ -4,12 +4,10 @@ import android.os.Handler
 import android.os.Looper
 import com.google.gson.Gson
 import java.io.IOException
-import java.lang.Exception
 import okhttp3.Call
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 
@@ -54,8 +52,8 @@ class OAuth2Api(private val client: OkHttpClient) {
     }
 
     private fun post(url: String, json: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
-        val body: RequestBody = json.toRequestBody(mediaType)
-        val request: Request = Request.Builder()
+        val body = json.toRequestBody(mediaType)
+        val request = Request.Builder()
             .url(url)
             .post(body)
             .build()
