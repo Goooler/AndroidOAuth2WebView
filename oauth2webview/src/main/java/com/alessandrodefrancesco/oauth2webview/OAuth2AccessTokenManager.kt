@@ -58,14 +58,13 @@ class OAuth2AccessTokenManager(
     /**
      * The API used to communicate with the Authorization Server
      */
-    private val networkAPI: OAuth2Api
-        get() {
-            var builder = Retrofit.Builder()
-            builder = builder.addConverterFactory(GsonConverterFactory.create(Gson()))
-            builder = builder.baseUrl(authorizationServerBaseURL)
-            val retrofit = builder.build()
-            return retrofit.create(OAuth2Api::class.java)
-        }
+    private val oAuth2Api: OAuth2Api by lazy {
+        val retrofit = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create(Gson()))
+            .baseUrl(authorizationServerBaseURL)
+            .build()
+        retrofit.create(OAuth2Api::class.java)
+    }
 
     /**
      * The [URL] to show in a [WebView]
@@ -145,7 +144,7 @@ class OAuth2AccessTokenManager(
      * @param callback the result of the operation
      */
     private fun requestRefreshedAccessToken(refreshToken: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
-        return networkAPI.requestNewAccessToken(
+        return oAuth2Api.requestNewAccessToken(
             path = tokenPath,
             refreshToken = refreshToken,
             clientID = clientID,
@@ -175,7 +174,7 @@ class OAuth2AccessTokenManager(
      * @param callback the result of the operation
      */
     fun exchangeAndSaveTokenUsingCode(code: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
-        networkAPI.requestAccessToken(
+        oAuth2Api.requestAccessToken(
             path = tokenPath,
             clientID = clientID,
             redirectUri = redirectURI,
@@ -214,7 +213,7 @@ class OAuth2AccessTokenManager(
     fun logout(callback: (Result<Any?>) -> Unit) {
         val refreshedToken = storage.getStoredAccessToken()?.refreshToken
         if (refreshedToken != null) {
-            networkAPI.requestLogout(
+            oAuth2Api.requestLogout(
                 path = logoutPath,
                 clientID = clientID,
                 clientSecret = clientSecret,
