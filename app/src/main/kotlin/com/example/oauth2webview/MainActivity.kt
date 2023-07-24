@@ -1,10 +1,10 @@
-package com.alessandrodefrancesco.oauth2webviewsample
+package com.example.oauth2webview
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.alessandrodefrancesco.oauth2webviewsample.databinding.ActivityMainBinding
+import com.example.oauth2webview.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding

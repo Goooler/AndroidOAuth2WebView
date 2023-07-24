@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace "com.alessandrodefrancesco.oauth2webviewsample"
+    namespace "com.example.oauth2webview"
     defaultConfig {
         applicationId namespace
         targetSdk 33

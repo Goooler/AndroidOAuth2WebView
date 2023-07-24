@@ -1,9 +1,9 @@
-package com.alessandrodefrancesco.oauth2webviewsample
+package com.example.oauth2webview
 
 import android.app.Application
 import android.content.Context
-import com.alessandrodefrancesco.oauth2webview.OAuth2AccessTokenManager
-import com.alessandrodefrancesco.oauth2webview.OAuth2AccessTokenStorageSharedPreferences
+import io.goooler.oauth2webview.OAuth2AccessTokenManager
+import io.goooler.oauth2webview.OAuth2AccessTokenStorageSharedPreferences
 
 class MyApplication : Application() {
 

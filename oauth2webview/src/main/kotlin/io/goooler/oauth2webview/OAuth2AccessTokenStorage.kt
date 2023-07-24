@@ -1,4 +1,4 @@
-package com.alessandrodefrancesco.oauth2webview
+package io.goooler.oauth2webview
 
 /**
  * An interface used by [OAuth2AccessTokenManager] to retrieve, store and remove the access token

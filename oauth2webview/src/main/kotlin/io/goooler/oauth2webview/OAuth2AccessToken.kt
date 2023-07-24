@@ -1,4 +1,4 @@
-package com.alessandrodefrancesco.oauth2webview
+package io.goooler.oauth2webview
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable

@@ -1,4 +1,4 @@
-package com.alessandrodefrancesco.oauth2webview
+package io.goooler.oauth2webview
 
 import retrofit2.Call
 import retrofit2.http.Field
