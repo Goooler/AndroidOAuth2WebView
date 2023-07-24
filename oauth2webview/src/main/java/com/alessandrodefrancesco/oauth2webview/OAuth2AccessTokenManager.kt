@@ -144,7 +144,7 @@ class OAuth2AccessTokenManager(
      * @param callback the result of the operation
      */
     private fun requestRefreshedAccessToken(refreshToken: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
-        return oAuth2Api.requestNewAccessToken(
+        oAuth2Api.requestNewAccessToken(
             path = tokenPath,
             refreshToken = refreshToken,
             clientID = clientID,
