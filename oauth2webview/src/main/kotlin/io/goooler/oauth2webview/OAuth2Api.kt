@@ -68,7 +68,8 @@ class OAuth2Api(private val client: OkHttpClient) {
                         val bean = gson.fromJson(response.body!!.string(), OAuth2AccessToken::class.java)
                         callback(Result.success(bean))
                     } else {
-                        callback(Result.failure(Exception(response.toString())))
+                        val message = response.body?.string() ?: response.toString()
+                        callback(Result.failure(Exception(message)))
                     }
                 }
             },
