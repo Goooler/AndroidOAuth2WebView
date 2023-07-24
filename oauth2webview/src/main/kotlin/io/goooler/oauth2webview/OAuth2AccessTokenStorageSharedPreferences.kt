@@ -1,4 +1,4 @@
-package com.alessandrodefrancesco.oauth2webview
+package io.goooler.oauth2webview
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
