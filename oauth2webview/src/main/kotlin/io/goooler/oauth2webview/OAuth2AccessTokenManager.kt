@@ -23,7 +23,6 @@ import retrofit2.converter.gson.GsonConverterFactory
  * and use [retrieveValidAccessToken] when in need of the access token
  *
  * @param storage an [OAuth2AccessTokenStorage] implementation that will store the access token securely
- * @param authorizationServerBaseURL the base URL for the Authorization Server that is compliant with the specifications in [https://tools.ietf.org/html/rfc6749](https://tools.ietf.org/html/rfc6749) (Ex. https://api.instagram.com/oauth/)
  * @param clientID the client ID as in the specifications [https://tools.ietf.org/html/rfc6749#section-2.3.1](https://tools.ietf.org/html/rfc6749#section-2.3.1)
  * @param clientSecret the client Secret as in the specifications [https://tools.ietf.org/html/rfc6749#section-2.3.1](https://tools.ietf.org/html/rfc6749#section-2.3.1)
  * @param redirectURI the redirectURI as in the specifications [https://tools.ietf.org/html/rfc6749#section-3.1.2](https://tools.ietf.org/html/rfc6749#section-3.1.2)
@@ -31,7 +30,8 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 class OAuth2AccessTokenManager(
     private val storage: OAuth2AccessTokenStorage,
-    private val authorizationServerBaseURL: String,
+    private val authorizationEndpoint: String,
+    private val tokenEndpoint: String,
     private val clientID: String,
     private val clientSecret: String,
     private val redirectURI: String,
@@ -39,17 +39,6 @@ class OAuth2AccessTokenManager(
 ) {
 
     var DEBUG = false
-
-    /**
-     * The URL path of the OAuth2 service where there is the webpage to show to user
-     */
-    var authorizationPath = "authorize"
-
-    /**
-     * The URL path of the OAuth2 service used to retrieve and refresh the access token
-     */
-    var tokenPath = "token"
-
     /**
      * The URL path of the OAuth2 service used to logout/invalidate the access token
      */
