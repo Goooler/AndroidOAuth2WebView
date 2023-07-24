@@ -7,9 +7,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import java.net.URL
 import java.util.concurrent.CountDownLatch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 /**
  * Token manger used to handle all the access token needs, only Authorization Code Grant flow is supported [https://oauth.net/2/grant-types/authorization-code/](https://oauth.net/2/grant-types/authorization-code/).
@@ -33,8 +30,10 @@ class OAuth2AccessTokenManager(
     private val redirectUri: String,
     private val scope: String?,
 ) {
+    private val oAuth2Api = OAuth2Api()
 
     var DEBUG = false
+
     /**
      * The URL path of the OAuth2 service used to logout/invalidate the access token
      */
@@ -51,7 +50,7 @@ class OAuth2AccessTokenManager(
             .appendQueryParameter("scope", scope)
             .appendQueryParameter("response_type", "code")
             .build()
-            .toString()
+            .toString(),
     )
 
     /**
@@ -120,27 +119,14 @@ class OAuth2AccessTokenManager(
      */
     private fun requestRefreshedAccessToken(refreshToken: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
         oAuth2Api.requestNewAccessToken(
-            path = tokenPath,
-            refreshToken = refreshToken,
-            clientID = clientId,
+            url = tokenEndpoint,
+            clientId = clientId,
             clientSecret = clientSecret,
             redirectUri = redirectUri,
             grantType = "refresh_token",
-        ).enqueue(object : Callback<OAuth2AccessToken> {
-            override fun onFailure(call: Call<OAuth2AccessToken>, t: Throwable) {
-                callback(Result.failure(t))
-            }
-
-            override fun onResponse(call: Call<OAuth2AccessToken>, response: Response<OAuth2AccessToken>) {
-                val accessToken = response.body()
-                if (!response.isSuccessful || accessToken == null) {
-                    callback(Result.failure(Exception()))
-                } else {
-                    storage.storeAccessToken(accessToken)
-                    callback(Result.success(accessToken))
-                }
-            }
-        })
+            refreshToken = refreshToken,
+            callback = callback,
+        )
     }
 
     /**
@@ -150,27 +136,14 @@ class OAuth2AccessTokenManager(
      */
     fun exchangeAndSaveTokenUsingCode(code: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
         oAuth2Api.requestAccessToken(
-            path = tokenPath,
-            clientID = clientId,
-            redirectUri = redirectUri,
+            url = tokenEndpoint,
+            clientId = clientId,
+            clientSecret = clientSecret,
             code = code,
-            grantType = "authorization_code",
-        ).enqueue(object : Callback<OAuth2AccessToken> {
-            override fun onFailure(call: Call<OAuth2AccessToken>, t: Throwable) {
-                callback(Result.failure(t))
-            }
-
-            override fun onResponse(call: Call<OAuth2AccessToken>, response: Response<OAuth2AccessToken>) {
-                val accessToken = response.body()
-                if (!response.isSuccessful || accessToken == null) {
-                    callback(Result.failure(Exception()))
-                } else {
-                    // success, save the token
-                    storage.storeAccessToken(accessToken)
-                    callback(Result.success(accessToken))
-                }
-            }
-        })
+            redirectUri = redirectUri,
+            grantType = "code",
+            callback = callback,
+        )
     }
 
     /**
@@ -178,40 +151,7 @@ class OAuth2AccessTokenManager(
      */
     fun isLogged(): Boolean {
         val storedAccessToken = storage.getStoredAccessToken()?.accessToken
-        return storedAccessToken != null && storedAccessToken.isNotEmpty()
-    }
-
-    /**
-     * Logs out the user from the authorization server
-     * @param callback the result of the operation
-     */
-    fun logout(callback: (Result<Any?>) -> Unit) {
-        val refreshedToken = storage.getStoredAccessToken()?.refreshToken
-        if (refreshedToken != null) {
-            oAuth2Api.requestLogout(
-                path = logoutPath,
-                clientID = clientId,
-                clientSecret = clientSecret,
-                refreshToken = refreshedToken,
-            )
-                .enqueue(object : Callback<Any?> {
-                    override fun onFailure(call: Call<Any?>, t: Throwable) {
-                        callback(Result.failure(t))
-                    }
-
-                    override fun onResponse(call: Call<Any?>, response: Response<Any?>) {
-                        if (!response.isSuccessful) {
-                            callback(Result.failure(Exception()))
-                        } else {
-                            storage.removeAccessToken()
-                            callback(Result.success(Any()))
-                        }
-                    }
-                })
-        } else {
-            storage.removeAccessToken()
-            callback(Result.success(Any()))
-        }
+        return !storedAccessToken.isNullOrEmpty()
     }
 
     /**

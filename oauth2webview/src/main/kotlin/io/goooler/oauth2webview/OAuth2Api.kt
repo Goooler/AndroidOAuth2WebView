@@ -1,16 +1,17 @@
 package io.goooler.oauth2webview
 
 import com.google.gson.Gson
+import java.io.IOException
+import java.lang.Exception
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
-import java.io.IOException
 
 /**
  * Retrofit API to communicate with the Authorization Server
  */
-object OAuth2Api {
+class OAuth2Api {
     private val client = OkHttpClient()
     private val mediaType = MediaType.get("application/json; charset=utf-8")
     private val gson = Gson()
@@ -48,7 +49,6 @@ object OAuth2Api {
         post(url, json, callback)
     }
 
-
     private fun post(url: String, json: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
         val body: RequestBody = RequestBody.create(mediaType, json)
         val request: Request = Request.Builder()
@@ -62,9 +62,12 @@ object OAuth2Api {
                 }
 
                 override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-                    val bean =
-                        gson.fromJson(response.body()!!.string(), OAuth2AccessToken::class.java)
-                    callback(Result.success(bean))
+                    if (response.isSuccessful && response.body() != null) {
+                        val bean = gson.fromJson(response.body()!!.string(), OAuth2AccessToken::class.java)
+                        callback(Result.success(bean))
+                    } else {
+                        callback(Result.failure(Exception()))
+                    }
                 }
             },
         )
