@@ -9,7 +9,7 @@ import okhttp3.Request
 import okhttp3.RequestBody
 
 /**
- * Retrofit API to communicate with the Authorization Server
+ * OkHttp API to communicate with the Authorization Server
  */
 class OAuth2Api {
     private val client = OkHttpClient()
