@@ -37,7 +37,5 @@ class MyApplication : Application() {
                 "offline_access",
             ).joinToString(" "),
         )
-
-        accessTokenManager.DEBUG = true
     }
 }

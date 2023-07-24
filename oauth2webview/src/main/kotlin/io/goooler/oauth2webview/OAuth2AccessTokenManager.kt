@@ -34,8 +34,6 @@ class OAuth2AccessTokenManager(
 ) {
     private val oAuth2Api = OAuth2Api(client)
 
-    var DEBUG = false
-
     /**
      * The [URL] to show in a [WebView]
      */
