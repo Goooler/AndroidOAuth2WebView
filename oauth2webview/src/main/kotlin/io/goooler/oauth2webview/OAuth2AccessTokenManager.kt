@@ -111,25 +111,6 @@ class OAuth2AccessTokenManager(
     }
 
     /**
-     * Make a request to the Authorization Server to refresh the access token
-     * @param callback the result of the operation
-     */
-    private fun requestRefreshedAccessToken(
-        refreshToken: String,
-        callback: (Result<OAuth2AccessToken>) -> Unit,
-    ) {
-        oAuth2Api.requestNewAccessToken(
-            url = tokenEndpoint,
-            clientId = clientId,
-            clientSecret = clientSecret,
-            redirectUri = redirectUri,
-            grantType = "refresh_token",
-            refreshToken = refreshToken,
-            callback = callback,
-        )
-    }
-
-    /**
      * Exchange the code received from the Authorization Server for the access token
      * @param code as described in [https://tools.ietf.org/html/rfc6749#section-4.1]
      * @param callback the result of the operation
@@ -186,5 +167,24 @@ class OAuth2AccessTokenManager(
         // Load the authorization URL
         val url = authorizationUrl.toString()
         webView.loadUrl(url)
+    }
+
+    /**
+     * Make a request to the Authorization Server to refresh the access token
+     * @param callback the result of the operation
+     */
+    private fun requestRefreshedAccessToken(
+        refreshToken: String,
+        callback: (Result<OAuth2AccessToken>) -> Unit,
+    ) {
+        oAuth2Api.requestNewAccessToken(
+            url = tokenEndpoint,
+            clientId = clientId,
+            clientSecret = clientSecret,
+            redirectUri = redirectUri,
+            grantType = "refresh_token",
+            refreshToken = refreshToken,
+            callback = callback,
+        )
     }
 }
