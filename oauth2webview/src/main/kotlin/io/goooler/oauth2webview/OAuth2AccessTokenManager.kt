@@ -32,7 +32,7 @@ class OAuth2AccessTokenManager(
     private val scope: String?,
     client: OkHttpClient = OkHttpClient(),
 ) {
-    private val oAuth2Api = OAuth2Api(client)
+    private val api = OAuth2Api(client)
 
     /**
      * The [URL] to show in a [WebView]
@@ -116,7 +116,7 @@ class OAuth2AccessTokenManager(
      * @param callback the result of the operation
      */
     fun exchangeAndSaveTokenUsingCode(code: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
-        oAuth2Api.requestAccessToken(
+        api.requestAccessToken(
             url = tokenEndpoint,
             clientId = clientId,
             clientSecret = clientSecret,
@@ -177,7 +177,7 @@ class OAuth2AccessTokenManager(
         refreshToken: String,
         callback: (Result<OAuth2AccessToken>) -> Unit,
     ) {
-        oAuth2Api.requestNewAccessToken(
+        api.requestNewAccessToken(
             url = tokenEndpoint,
             clientId = clientId,
             clientSecret = clientSecret,
