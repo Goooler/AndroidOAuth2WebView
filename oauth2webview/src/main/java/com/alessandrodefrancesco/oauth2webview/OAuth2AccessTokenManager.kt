@@ -6,11 +6,9 @@ import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.alessandrodefrancesco.utils.LoggingInterceptor
 import com.google.gson.Gson
 import java.net.URL
 import java.util.concurrent.CountDownLatch
-import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -65,11 +63,6 @@ class OAuth2AccessTokenManager(
             var builder = Retrofit.Builder()
             builder = builder.addConverterFactory(GsonConverterFactory.create(Gson()))
             builder = builder.baseUrl(authorizationServerBaseURL)
-            if (DEBUG) {
-                val client = OkHttpClient.Builder().addInterceptor(LoggingInterceptor()).build()
-                builder = builder.client(client)
-            }
-
             val retrofit = builder.build()
             return retrofit.create(OAuth2Api::class.java)
         }
