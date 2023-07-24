@@ -1,4 +1,5 @@
 import com.android.build.gradle.BasePlugin
+import com.diffplug.gradle.spotless.SpotlessTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -35,6 +36,9 @@ subprojects {
             target('**/*.kt')
             ktlint('0.50.0')
         }
+    }
+    tasks.withType(SpotlessTask).configureEach {
+        notCompatibleWithConfigurationCache("https://github.com/diffplug/spotless/issues/1764")
     }
 }
 
