@@ -69,7 +69,7 @@ class OAuth2Api {
                         val bean = gson.fromJson(response.body!!.string(), OAuth2AccessToken::class.java)
                         callback(Result.success(bean))
                     } else {
-                        callback(Result.failure(Exception()))
+                        callback(Result.failure(Exception(response.toString())))
                     }
                 }
             },
