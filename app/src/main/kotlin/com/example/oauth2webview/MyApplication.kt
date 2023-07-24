@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import io.goooler.oauth2webview.OAuth2AccessTokenManager
 import io.goooler.oauth2webview.OAuth2AccessTokenStorageSharedPreferences
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 
 class MyApplication : Application() {
 
@@ -16,6 +18,11 @@ class MyApplication : Application() {
 
         val sharedPreferences = getSharedPreferences("PREFERENCES", Context.MODE_PRIVATE)
         val storageSharedPreferences = OAuth2AccessTokenStorageSharedPreferences(sharedPreferences)
+        val logging = HttpLoggingInterceptor().apply { setLevel(HttpLoggingInterceptor.Level.BODY) }
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .build()
+
         accessTokenManager = OAuth2AccessTokenManager(
             storage = storageSharedPreferences,
             // https://github.com/thundernest/k-9/blob/00148f1a9939c5d2aa82013007a5386f0b03cab3/app/k9mail/src/main/java/com/fsck/k9/auth/AppOAuthConfigurationFactory.kt#L53-L54
@@ -32,6 +39,7 @@ class MyApplication : Application() {
                 "https://outlook.office.com/SMTP.Send",
                 "offline_access",
             ).joinToString(" "),
+            client = okHttpClient,
         )
     }
 }
