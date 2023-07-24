@@ -6,11 +6,9 @@ import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.alessandrodefrancesco.utils.LoggingInterceptor
 import com.google.gson.Gson
 import java.net.URL
 import java.util.concurrent.CountDownLatch
-import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -60,19 +58,13 @@ class OAuth2AccessTokenManager(
     /**
      * The API used to communicate with the Authorization Server
      */
-    private val networkAPI: OAuth2Api
-        get() {
-            var builder = Retrofit.Builder()
-            builder = builder.addConverterFactory(GsonConverterFactory.create(Gson()))
-            builder = builder.baseUrl(authorizationServerBaseURL)
-            if (DEBUG) {
-                val client = OkHttpClient.Builder().addInterceptor(LoggingInterceptor()).build()
-                builder = builder.client(client)
-            }
-
-            val retrofit = builder.build()
-            return retrofit.create(OAuth2Api::class.java)
-        }
+    private val oAuth2Api: OAuth2Api by lazy {
+        val retrofit = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create(Gson()))
+            .baseUrl(authorizationServerBaseURL)
+            .build()
+        retrofit.create(OAuth2Api::class.java)
+    }
 
     /**
      * The [URL] to show in a [WebView]
@@ -152,7 +144,7 @@ class OAuth2AccessTokenManager(
      * @param callback the result of the operation
      */
     private fun requestRefreshedAccessToken(refreshToken: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
-        return networkAPI.requestNewAccessToken(
+        oAuth2Api.requestNewAccessToken(
             path = tokenPath,
             refreshToken = refreshToken,
             clientID = clientID,
@@ -182,7 +174,7 @@ class OAuth2AccessTokenManager(
      * @param callback the result of the operation
      */
     fun exchangeAndSaveTokenUsingCode(code: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
-        networkAPI.requestAccessToken(
+        oAuth2Api.requestAccessToken(
             path = tokenPath,
             clientID = clientID,
             redirectUri = redirectURI,
@@ -221,7 +213,7 @@ class OAuth2AccessTokenManager(
     fun logout(callback: (Result<Any?>) -> Unit) {
         val refreshedToken = storage.getStoredAccessToken()?.refreshToken
         if (refreshedToken != null) {
-            networkAPI.requestLogout(
+            oAuth2Api.requestLogout(
                 path = logoutPath,
                 clientID = clientID,
                 clientSecret = clientSecret,
