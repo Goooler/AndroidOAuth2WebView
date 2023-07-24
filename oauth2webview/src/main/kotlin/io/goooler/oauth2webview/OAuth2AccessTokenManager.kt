@@ -59,6 +59,7 @@ class OAuth2AccessTokenManager(
             accessToken == null -> {
                 callback(Result.failure(Exception("No stored Token found")))
             }
+
             accessToken.isExpired -> {
                 if (accessToken.refreshToken != null) {
                     requestRefreshedAccessToken(accessToken.refreshToken, callback)
@@ -66,6 +67,7 @@ class OAuth2AccessTokenManager(
                     callback(Result.failure(Exception("No Refresh Access Token")))
                 }
             }
+
             else -> {
                 callback(Result.success(accessToken))
             }
@@ -112,7 +114,10 @@ class OAuth2AccessTokenManager(
      * Make a request to the Authorization Server to refresh the access token
      * @param callback the result of the operation
      */
-    private fun requestRefreshedAccessToken(refreshToken: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
+    private fun requestRefreshedAccessToken(
+        refreshToken: String,
+        callback: (Result<OAuth2AccessToken>) -> Unit,
+    ) {
         oAuth2Api.requestNewAccessToken(
             url = tokenEndpoint,
             clientId = clientId,
@@ -160,31 +165,20 @@ class OAuth2AccessTokenManager(
      * Set up a [WebView] to display the OAuth2 authorization page and be called when the login has been successful or not
      *
      * @param webView the [WebView] that will contain the login page of the app
-     * @param loginFail when the login failed
-     * @param loginSuccess when the login has been successful and the access token has been successfully stored
      */
     @SuppressLint("SetJavaScriptEnabled")
-    fun setUpWebView(webView: WebView, loginSuccess: () -> Unit, loginFail: () -> Unit) {
+    fun setUpWebView(webView: WebView, callback: (Result<OAuth2AccessToken>) -> Unit) {
         webView.clearCache(true)
         webView.settings.javaScriptEnabled = true
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
         webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                if (request?.url.toString().startsWith(redirectUri)) {
-                    val code = request?.url?.getQueryParameter("code")
-                    if (code != null) {
-                        exchangeAndSaveTokenUsingCode(code) { result ->
-                            result.onSuccess {
-                                loginSuccess()
-                            }
-                            result.onFailure {
-                                loginFail()
-                            }
-                        }
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                if (request.url.toString().startsWith(redirectUri)) {
+                    request.url.getQueryParameter("code")?.let { code ->
+                        exchangeAndSaveTokenUsingCode(code, callback)
                         return true
                     }
                 }
-
                 return super.shouldOverrideUrlLoading(view, request)
             }
         }
