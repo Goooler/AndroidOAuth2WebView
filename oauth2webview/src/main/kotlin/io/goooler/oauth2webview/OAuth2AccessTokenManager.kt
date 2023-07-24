@@ -2,18 +2,14 @@ package io.goooler.oauth2webview
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.google.gson.Gson
 import java.net.URL
 import java.util.concurrent.CountDownLatch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 /**
  * Token manger used to handle all the access token needs, only Authorization Code Grant flow is supported [https://oauth.net/2/grant-types/authorization-code/](https://oauth.net/2/grant-types/authorization-code/).
@@ -45,27 +41,17 @@ class OAuth2AccessTokenManager(
     var logoutPath = "logout"
 
     /**
-     * The API used to communicate with the Authorization Server
-     */
-    private val oAuth2Api: OAuth2Api by lazy {
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create(Gson()))
-            .baseUrl(authorizationServerBaseURL)
-            .build()
-        retrofit.create(OAuth2Api::class.java)
-    }
-
-    /**
      * The [URL] to show in a [WebView]
      */
-    val authorizationUrl = URL(
-        Uri.parse(authorizationServerBaseURL + authorizationPath)
+    val authorizationUrl: URL = URL(
+        Uri.parse(authorizationEndpoint)
             .buildUpon()
             .appendQueryParameter("client_id", clientId)
             .appendQueryParameter("redirect_uri", redirectUri)
             .appendQueryParameter("scope", scope)
             .appendQueryParameter("response_type", "code")
-            .build().toString(),
+            .build()
+            .toString()
     )
 
     /**
@@ -248,11 +234,9 @@ class OAuth2AccessTokenManager(
         webView.settings.javaScriptEnabled = true
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
         webView.webViewClient = object : WebViewClient() {
-
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                 if (request?.url.toString().startsWith(redirectUri)) {
                     val code = request?.url?.getQueryParameter("code")
-                    Log.d("OAuth2", "Redirecting to: ${request?.url}")
                     if (code != null) {
                         exchangeAndSaveTokenUsingCode(code) { result ->
                             result.onSuccess {
