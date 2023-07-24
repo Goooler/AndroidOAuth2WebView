@@ -23,7 +23,7 @@ import java.util.concurrent.CountDownLatch
  */
 class OAuth2AccessTokenManager(
     private val storage: OAuth2AccessTokenStorage,
-    private val authorizationEndpoint: String,
+    authorizationEndpoint: String,
     private val tokenEndpoint: String,
     private val clientId: String,
     private val clientSecret: String?,
@@ -33,11 +33,6 @@ class OAuth2AccessTokenManager(
     private val oAuth2Api = OAuth2Api()
 
     var DEBUG = false
-
-    /**
-     * The URL path of the OAuth2 service used to logout/invalidate the access token
-     */
-    var logoutPath = "logout"
 
     /**
      * The [URL] to show in a [WebView]
