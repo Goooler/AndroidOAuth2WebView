@@ -33,6 +33,13 @@ data class OAuth2AccessToken(
     val refreshToken: String?,
 
     /**
+     * The ID token describing the authenticated user, if provided.
+     * @see [OpenID Connect Core 1.0, Section 2](https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.2)
+     */
+    @SerializedName("id_token")
+    val idToken: String?,
+
+    /**
      * OPTIONAL
      */
     val scope: String?,
