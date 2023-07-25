@@ -168,7 +168,7 @@ class OAuth2AccessTokenManager(
         }
         webView.webChromeClient = object : WebChromeClient() {
             override fun onCloseWindow(window: WebView) {
-                callback(Result.failure(Exception("User closed the window")))
+                callback(Result.failure(OAuth2Exception.UserCancelException("User closed the window")))
             }
         }
 
