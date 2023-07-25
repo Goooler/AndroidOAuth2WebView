@@ -6,7 +6,6 @@ import com.google.gson.Gson
 import java.io.IOException
 import okhttp3.Call
 import okhttp3.FormBody
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -70,11 +69,15 @@ class OAuth2Api(private val client: OkHttpClient) {
                 override fun onResponse(call: Call, response: Response) {
                     handler.post {
                         if (response.isSuccessful && response.body != null) {
-                            val bean = gson.fromJson(
-                                response.body!!.string(),
-                                OAuth2AccessToken::class.java,
-                            )
-                            callback(Result.success(bean))
+                            try {
+                                val bean = gson.fromJson(
+                                    response.body!!.string(),
+                                    OAuth2AccessToken::class.java,
+                                )
+                                callback(Result.success(bean))
+                            } catch (e: Exception) {
+                                callback(Result.failure(e))
+                            }
                         } else {
                             val message = response.body?.string() ?: response.toString()
                             callback(Result.failure(Exception(message)))
