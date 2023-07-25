@@ -14,20 +14,20 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        MyApplication.accessTokenManager.setUpWebView(
-            binding.webView,
-            loginFail = {
-                Log.d("Login", "Failure")
-                Toast.makeText(this, "LOGIN FAILURE", Toast.LENGTH_SHORT).show()
-                finish()
-            },
-            loginSuccess = {
-                Log.d("Login", "Success")
+        MyApplication.accessTokenManager.setUpWebView(binding.webView) {
+            it.onSuccess { bean ->
                 Toast.makeText(this, "LOGGED", Toast.LENGTH_SHORT).show()
+                Log.d("LoginActivity", bean.toString())
 
                 startActivity(MainActivity.newIntent(this))
                 finish()
-            },
-        )
+            }
+            it.onFailure { e ->
+                Toast.makeText(this, "LOGIN FAILURE", Toast.LENGTH_SHORT).show()
+                e.printStackTrace()
+
+                finish()
+            }
+        }
     }
 }

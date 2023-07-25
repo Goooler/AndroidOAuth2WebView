@@ -2,7 +2,7 @@
 
 This is a fork of [AlessandroDeFrancesco/AndroidOAuth2WebView](https://github.com/AlessandroDeFrancesco/AndroidOAuth2WebView), wants to be the easiest and fastest setup of the OAuth2 Authorization Code Grant flow for an Android application.
 
-The only external library used is Retrofit2 to make requests to the Authorization Server.
+The only external library used is OkHttp to make requests to the Authorization Server.
 
 Why not building on Chrome Custom Tabs like [Auth0.Android](https://github.com/auth0/Auth0.Android) or [openid/AppAuth-Android](https://github.com/openid/AppAuth-Android)? Because its customization options are not as extensive the WebView.
 
