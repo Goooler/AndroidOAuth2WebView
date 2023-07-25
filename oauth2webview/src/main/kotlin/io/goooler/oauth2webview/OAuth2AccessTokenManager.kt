@@ -122,7 +122,7 @@ class OAuth2AccessTokenManager(
             clientSecret = clientSecret,
             code = code,
             redirectUri = redirectUri,
-            grantType = "code",
+            grantType = "authorization_code",
             callback = callback,
         )
     }
