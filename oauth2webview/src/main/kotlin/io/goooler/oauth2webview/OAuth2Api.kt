@@ -15,6 +15,7 @@ import okhttp3.Response
  */
 class OAuth2Api(private val client: OkHttpClient) {
     private val gson = Gson()
+    private val handler = Handler(Looper.getMainLooper())
 
     fun requestAccessToken(
         url: String,
@@ -58,34 +59,7 @@ class OAuth2Api(private val client: OkHttpClient) {
             .url(url)
             .post(body)
             .build()
-        client.newCall(request).enqueue(
-            object : okhttp3.Callback {
-                private val handler = Handler(Looper.getMainLooper())
-
-                override fun onFailure(call: Call, e: IOException) {
-                    handler.post { callback(Result.failure(e)) }
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    handler.post {
-                        if (response.isSuccessful && response.body != null) {
-                            try {
-                                val bean = gson.fromJson(
-                                    response.body!!.string(),
-                                    OAuth2AccessToken::class.java,
-                                )
-                                callback(Result.success(bean))
-                            } catch (e: Exception) {
-                                callback(Result.failure(e))
-                            }
-                        } else {
-                            val message = response.body?.string() ?: response.toString()
-                            callback(Result.failure(Exception(message)))
-                        }
-                    }
-                }
-            },
-        )
+        client.newCall(request).enqueue(HttpCallback(handler, gson, callback))
     }
 
     private fun buildRequestBody(
@@ -110,5 +84,34 @@ class OAuth2Api(private val client: OkHttpClient) {
             builder.add("refresh_token", it)
         }
         return builder.build()
+    }
+
+    class HttpCallback(
+        private val handler: Handler,
+        private val gson: Gson,
+        private val callback: (Result<OAuth2AccessToken>) -> Unit,
+    ) : okhttp3.Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            handler.post { callback(Result.failure(e)) }
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            handler.post {
+                if (response.isSuccessful && response.body != null) {
+                    try {
+                        val bean = gson.fromJson(
+                            response.body!!.string(),
+                            OAuth2AccessToken::class.java,
+                        )
+                        callback(Result.success(bean))
+                    } catch (e: Exception) {
+                        callback(Result.failure(e))
+                    }
+                } else {
+                    val message = response.body?.string() ?: response.toString()
+                    callback(Result.failure(Exception(message)))
+                }
+            }
+        }
     }
 }
