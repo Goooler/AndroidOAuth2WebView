@@ -15,7 +15,6 @@ import okhttp3.Response
  * OkHttp API to communicate with the Authorization Server
  */
 class OAuth2Api(private val client: OkHttpClient) {
-    private val mediaType = "application/json; charset=utf-8".toMediaType()
     private val gson = Gson()
 
     fun requestAccessToken(
@@ -27,8 +26,8 @@ class OAuth2Api(private val client: OkHttpClient) {
         grantType: String,
         callback: (Result<OAuth2AccessToken>) -> Unit,
     ) {
-        val formBody = createRequestBody(clientId, clientSecret, code, redirectUri, grantType, null)
-        post(url, formBody, callback)
+        val body = buildRequestBody(clientId, clientSecret, code, redirectUri, grantType, null)
+        post(url, body, callback)
     }
 
     fun requestNewAccessToken(
@@ -40,7 +39,7 @@ class OAuth2Api(private val client: OkHttpClient) {
         refreshToken: String,
         callback: (Result<OAuth2AccessToken>) -> Unit,
     ) {
-        val formBody = createRequestBody(
+        val body = buildRequestBody(
             clientId,
             clientSecret,
             null,
@@ -48,17 +47,17 @@ class OAuth2Api(private val client: OkHttpClient) {
             grantType,
             refreshToken,
         )
-        post(url, formBody, callback)
+        post(url, body, callback)
     }
 
     private fun post(
         url: String,
-        formBody: FormBody,
+        body: FormBody,
         callback: (Result<OAuth2AccessToken>) -> Unit,
     ) {
         val request = Request.Builder()
             .url(url)
-            .post(formBody)
+            .post(body)
             .build()
         client.newCall(request).enqueue(
             object : okhttp3.Callback {
@@ -86,7 +85,7 @@ class OAuth2Api(private val client: OkHttpClient) {
         )
     }
 
-    private fun createRequestBody(
+    private fun buildRequestBody(
         clientId: String,
         clientSecret: String?,
         code: String?,
