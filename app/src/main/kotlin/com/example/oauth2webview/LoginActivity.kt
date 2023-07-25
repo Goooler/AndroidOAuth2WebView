@@ -15,9 +15,9 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         MyApplication.accessTokenManager.setUpWebView(binding.webView) {
-            it.onSuccess { bean ->
+            it.onSuccess { token ->
                 Toast.makeText(this, "LOGGED", Toast.LENGTH_SHORT).show()
-                Log.d("LoginActivity", bean.toString())
+                Log.d("LoginActivity", token.toString())
 
                 startActivity(MainActivity.newIntent(this))
                 finish()

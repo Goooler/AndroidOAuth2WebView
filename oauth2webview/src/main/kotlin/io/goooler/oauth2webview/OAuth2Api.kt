@@ -101,11 +101,11 @@ class OAuth2Api(private val client: OkHttpClient) {
             handler.post {
                 if (response.isSuccessful && response.body != null) {
                     try {
-                        val bean = gson.fromJson(
+                        val token = gson.fromJson(
                             response.body!!.string(),
                             OAuth2AccessToken::class.java,
                         )
-                        callback.success(bean)
+                        callback.success(token)
                     } catch (e: Exception) {
                         callback.failure(e)
                     }
