@@ -40,6 +40,8 @@ class MyApplication : Application() {
                 "offline_access",
             ).joinToString(" "),
             client = okHttpClient,
-        )
+        ).apply {
+            prompt = "select_account"
+        }
     }
 }

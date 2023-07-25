@@ -26,7 +26,7 @@ import okhttp3.OkHttpClient
  */
 class OAuth2AccessTokenManager(
     private val storage: OAuth2AccessTokenStorage,
-    authorizationEndpoint: String,
+    private val authorizationEndpoint: String,
     private val tokenEndpoint: String,
     private val clientId: String,
     private val clientSecret: String?,
@@ -36,16 +36,21 @@ class OAuth2AccessTokenManager(
 ) {
     private val api = OAuth2Api(client)
 
+    var prompt: String? = null
+
     /**
      * The [URL] to show in a [WebView]
      */
-    private val authorizationUrl = URL(
+    private val authorizationUrl get() = URL(
         Uri.parse(authorizationEndpoint)
             .buildUpon()
             .appendQueryParameter("client_id", clientId)
             .appendQueryParameter("redirect_uri", redirectUri)
             .appendQueryParameter("scope", scope)
             .appendQueryParameter("response_type", "code")
+            .apply {
+                if (prompt != null) appendQueryParameter("prompt", prompt)
+            }
             .build()
             .toString(),
     )
