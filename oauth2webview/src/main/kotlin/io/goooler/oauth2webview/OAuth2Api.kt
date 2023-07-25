@@ -5,10 +5,10 @@ import android.os.Looper
 import com.google.gson.Gson
 import java.io.IOException
 import okhttp3.Call
+import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 
 /**
@@ -27,8 +27,8 @@ class OAuth2Api(private val client: OkHttpClient) {
         grantType: String,
         callback: (Result<OAuth2AccessToken>) -> Unit,
     ) {
-        val json = createRequestBodyString(clientId, clientSecret, code, redirectUri, grantType, null)
-        post(url, json, callback)
+        val formBody = createRequestBody(clientId, clientSecret, code, redirectUri, grantType, null)
+        post(url, formBody, callback)
     }
 
     fun requestNewAccessToken(
@@ -40,7 +40,7 @@ class OAuth2Api(private val client: OkHttpClient) {
         refreshToken: String,
         callback: (Result<OAuth2AccessToken>) -> Unit,
     ) {
-        val json = createRequestBodyString(
+        val formBody = createRequestBody(
             clientId,
             clientSecret,
             null,
@@ -48,14 +48,17 @@ class OAuth2Api(private val client: OkHttpClient) {
             grantType,
             refreshToken,
         )
-        post(url, json, callback)
+        post(url, formBody, callback)
     }
 
-    private fun post(url: String, json: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
-        val body = json.toRequestBody(mediaType)
+    private fun post(
+        url: String,
+        formBody: FormBody,
+        callback: (Result<OAuth2AccessToken>) -> Unit,
+    ) {
         val request = Request.Builder()
             .url(url)
-            .post(body)
+            .post(formBody)
             .build()
         client.newCall(request).enqueue(
             object : okhttp3.Callback {
@@ -68,7 +71,10 @@ class OAuth2Api(private val client: OkHttpClient) {
                 override fun onResponse(call: Call, response: Response) {
                     handler.post {
                         if (response.isSuccessful && response.body != null) {
-                            val bean = gson.fromJson(response.body!!.string(), OAuth2AccessToken::class.java)
+                            val bean = gson.fromJson(
+                                response.body!!.string(),
+                                OAuth2AccessToken::class.java,
+                            )
                             callback(Result.success(bean))
                         } else {
                             val message = response.body?.string() ?: response.toString()
@@ -80,28 +86,27 @@ class OAuth2Api(private val client: OkHttpClient) {
         )
     }
 
-    private fun createRequestBodyString(
+    private fun createRequestBody(
         clientId: String,
         clientSecret: String?,
         code: String?,
         redirectUri: String,
         grantType: String,
         refreshToken: String?,
-    ): String {
-        val map = mutableMapOf(
-            "client_id" to clientId,
-            "redirect_uri" to redirectUri,
-            "grant_type" to grantType,
-        )
+    ): FormBody {
+        val builder = FormBody.Builder()
+            .add("client_id", clientId)
+            .add("redirect_uri", redirectUri)
+            .add("grant_type", grantType)
         code?.let {
-            map["code"] = it
+            builder.add("code", it)
         }
         clientSecret?.let {
-            map["client_secret"] = it
+            builder.add("client_secret", it)
         }
         refreshToken?.let {
-            map["refresh_token"] = it
+            builder.add("refresh_token", it)
         }
-        return gson.toJson(map)
+        return builder.build()
     }
 }
