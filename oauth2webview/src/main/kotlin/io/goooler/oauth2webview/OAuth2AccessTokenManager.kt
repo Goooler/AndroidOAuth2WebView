@@ -2,6 +2,7 @@ package io.goooler.oauth2webview
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -163,6 +164,11 @@ class OAuth2AccessTokenManager(
                     }
                 }
                 return super.shouldOverrideUrlLoading(view, request)
+            }
+        }
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onCloseWindow(window: WebView) {
+                callback(Result.failure(Exception("User closed the window")))
             }
         }
 
