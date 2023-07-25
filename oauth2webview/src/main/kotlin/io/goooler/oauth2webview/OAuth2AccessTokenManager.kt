@@ -17,6 +17,8 @@ import okhttp3.OkHttpClient
  * and use [retrieveValidAccessToken] when in need of the access token
  *
  * @param storage an [OAuth2AccessTokenStorage] implementation that will store the access token securely
+ * @param authorizationEndpoint The [authorization endpoint URI](https://tools.ietf.org/html/rfc6749#section-3.1) for the service.
+ * @param tokenEndpoint The [token endpoint URI](https://tools.ietf.org/html/rfc6749#section-3.2) for the service.
  * @param clientId the client ID as in the specifications [https://tools.ietf.org/html/rfc6749#section-2.3.1](https://tools.ietf.org/html/rfc6749#section-2.3.1)
  * @param clientSecret the client Secret as in the specifications [https://tools.ietf.org/html/rfc6749#section-2.3.1](https://tools.ietf.org/html/rfc6749#section-2.3.1)
  * @param redirectUri the redirectURI as in the specifications [https://tools.ietf.org/html/rfc6749#section-3.1.2](https://tools.ietf.org/html/rfc6749#section-3.1.2)
