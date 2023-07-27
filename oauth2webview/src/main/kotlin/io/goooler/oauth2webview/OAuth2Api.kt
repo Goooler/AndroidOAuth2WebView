@@ -3,6 +3,8 @@ package io.goooler.oauth2webview
 import android.os.Handler
 import android.os.Looper
 import com.google.gson.Gson
+import io.goooler.oauth2webview.OAuth2AccessTokenManager.Companion.failure
+import io.goooler.oauth2webview.OAuth2AccessTokenManager.Companion.success
 import java.io.IOException
 import okhttp3.Call
 import okhttp3.FormBody
@@ -92,24 +94,24 @@ class OAuth2Api(private val client: OkHttpClient) {
         private val callback: (Result<OAuth2AccessToken>) -> Unit,
     ) : okhttp3.Callback {
         override fun onFailure(call: Call, e: IOException) {
-            handler.post { callback(Result.failure(e)) }
+            handler.post { callback.failure(cause = e) }
         }
 
         override fun onResponse(call: Call, response: Response) {
             handler.post {
                 if (response.isSuccessful && response.body != null) {
                     try {
-                        val bean = gson.fromJson(
+                        val token = gson.fromJson(
                             response.body!!.string(),
                             OAuth2AccessToken::class.java,
                         )
-                        callback(Result.success(bean))
+                        callback.success(token)
                     } catch (e: Exception) {
-                        callback(Result.failure(e))
+                        callback.failure(cause = e)
                     }
                 } else {
                     val message = response.body?.string() ?: response.toString()
-                    callback(Result.failure(Exception(message)))
+                    callback.failure(message)
                 }
             }
         }

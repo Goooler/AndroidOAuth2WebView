@@ -60,19 +60,19 @@ class OAuth2AccessTokenManager(
         val accessToken = storage.getStoredAccessToken()
         when {
             accessToken == null -> {
-                callback(Result.failure(Exception("No stored Token found")))
+                callback.failure("No stored AccessToken found")
             }
 
             accessToken.isExpired -> {
                 if (accessToken.refreshToken != null) {
                     requestRefreshedAccessToken(accessToken.refreshToken, callback)
                 } else {
-                    callback(Result.failure(Exception("No Refresh Access Token")))
+                    callback.failure("No RefreshToken")
                 }
             }
 
             else -> {
-                callback(Result.success(accessToken))
+                callback.success(accessToken)
             }
         }
     }
@@ -156,7 +156,10 @@ class OAuth2AccessTokenManager(
         webView.settings.javaScriptEnabled = true
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
         webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+            override fun shouldOverrideUrlLoading(
+                view: WebView,
+                request: WebResourceRequest,
+            ): Boolean {
                 if (request.url.toString().startsWith(redirectUri)) {
                     request.url.getQueryParameter("code")?.let { code ->
                         exchangeAndSaveTokenUsingCode(code, callback)
@@ -168,7 +171,7 @@ class OAuth2AccessTokenManager(
         }
         webView.webChromeClient = object : WebChromeClient() {
             override fun onCloseWindow(window: WebView) {
-                callback(Result.failure(Exception("User closed the window")))
+                callback.cancel()
             }
         }
 
@@ -194,5 +197,22 @@ class OAuth2AccessTokenManager(
             refreshToken = refreshToken,
             callback = callback,
         )
+    }
+
+    companion object {
+        fun ((Result<OAuth2AccessToken>) -> Unit).cancel() {
+            invoke(Result.failure(OAuth2Exception.UserCancelException("User closed the window")))
+        }
+
+        fun ((Result<OAuth2AccessToken>) -> Unit).failure(
+            message: String = "OAuth2 auth failed",
+            cause: Throwable? = null,
+        ) {
+            invoke(Result.failure(OAuth2Exception.OAuth2AuthException(message, cause)))
+        }
+
+        fun ((Result<OAuth2AccessToken>) -> Unit).success(token: OAuth2AccessToken) {
+            invoke(Result.success(token))
+        }
     }
 }
