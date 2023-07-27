@@ -60,14 +60,14 @@ class OAuth2AccessTokenManager(
         val accessToken = storage.getStoredAccessToken()
         when {
             accessToken == null -> {
-                callback.failure("No stored Token found")
+                callback.failure("No stored AccessToken found")
             }
 
             accessToken.isExpired -> {
                 if (accessToken.refreshToken != null) {
                     requestRefreshedAccessToken(accessToken.refreshToken, callback)
                 } else {
-                    callback.failure("No Refresh Access Token")
+                    callback.failure("No RefreshToken")
                 }
             }
 
