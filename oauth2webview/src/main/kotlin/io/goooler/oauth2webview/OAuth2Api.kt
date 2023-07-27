@@ -94,7 +94,7 @@ class OAuth2Api(private val client: OkHttpClient) {
         private val callback: (Result<OAuth2AccessToken>) -> Unit,
     ) : okhttp3.Callback {
         override fun onFailure(call: Call, e: IOException) {
-            handler.post { callback.failure(e) }
+            handler.post { callback.failure(cause = e) }
         }
 
         override fun onResponse(call: Call, response: Response) {
@@ -107,7 +107,7 @@ class OAuth2Api(private val client: OkHttpClient) {
                         )
                         callback.success(token)
                     } catch (e: Exception) {
-                        callback.failure(e)
+                        callback.failure(cause = e)
                     }
                 } else {
                     val message = response.body?.string() ?: response.toString()

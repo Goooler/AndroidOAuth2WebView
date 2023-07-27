@@ -9,8 +9,5 @@ sealed class OAuth2Exception(message: String, cause: Throwable?) : Exception(mes
     /**
      * The authorization server returned an error
      */
-    class OAuth2AuthException : OAuth2Exception {
-        constructor(cause: Throwable) : super("OAuth2 auth failed", cause)
-        constructor(message: String) : super(message, null)
-    }
+    class OAuth2AuthException(message: String, cause: Throwable?) : OAuth2Exception(message, cause)
 }

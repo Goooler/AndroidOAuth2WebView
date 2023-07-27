@@ -204,12 +204,11 @@ class OAuth2AccessTokenManager(
             invoke(Result.failure(OAuth2Exception.UserCancelException("User closed the window")))
         }
 
-        fun ((Result<OAuth2AccessToken>) -> Unit).failure(exception: Exception) {
-            invoke(Result.failure(OAuth2Exception.OAuth2AuthException(exception)))
-        }
-
-        fun ((Result<OAuth2AccessToken>) -> Unit).failure(message: String) {
-            invoke(Result.failure(OAuth2Exception.OAuth2AuthException(message)))
+        fun ((Result<OAuth2AccessToken>) -> Unit).failure(
+            message: String = "OAuth2 auth failed",
+            cause: Throwable? = null,
+        ) {
+            invoke(Result.failure(OAuth2Exception.OAuth2AuthException(message, cause)))
         }
 
         fun ((Result<OAuth2AccessToken>) -> Unit).success(token: OAuth2AccessToken) {
