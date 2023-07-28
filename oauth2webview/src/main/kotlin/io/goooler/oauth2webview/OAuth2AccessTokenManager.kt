@@ -56,23 +56,23 @@ class OAuth2AccessTokenManager(
      * This call is asynchronous and can make a network call if the token needs to be refreshed
      * @param callback the result of the operation
      */
-    fun retrieveValidAccessToken(callback: (Result<OAuth2AccessToken>) -> Unit) {
+    fun retrieveValidAccessToken(listener: OAuth2StateListener) {
         val accessToken = storage.getStoredAccessToken()
         when {
             accessToken == null -> {
-                callback.failure("No stored AccessToken found")
+                listener.failure("No stored AccessToken found")
             }
 
             accessToken.isExpired -> {
                 if (accessToken.refreshToken != null) {
-                    requestRefreshedAccessToken(accessToken.refreshToken, callback)
+                    requestRefreshedAccessToken(accessToken.refreshToken, listener)
                 } else {
-                    callback.failure("No RefreshToken")
+                    listener.failure("No RefreshToken")
                 }
             }
 
             else -> {
-                callback.success(accessToken)
+                listener.onSuccess(accessToken)
             }
         }
     }
@@ -84,13 +84,23 @@ class OAuth2AccessTokenManager(
      */
     fun retrieveValidAccessTokenBlocking(): OAuth2AccessToken? {
         val countDownLatch = CountDownLatch(1)
-        var token: OAuth2AccessToken? = null
-        retrieveValidAccessToken { result ->
-            token = result.getOrNull()
-            countDownLatch.countDown()
-        }
+        var newToken: OAuth2AccessToken? = null
+        retrieveValidAccessToken(
+            object : OAuth2StateListener {
+                override fun onSuccess(token: OAuth2AccessToken) {
+                    newToken = token
+                    countDownLatch.countDown()
+                }
+
+                override fun onFailure(e: OAuth2Exception) {
+                    countDownLatch.countDown()
+                }
+
+                override fun onLoading() = Unit
+            },
+        )
         countDownLatch.await()
-        return token
+        return newToken
     }
 
     /**
@@ -103,10 +113,21 @@ class OAuth2AccessTokenManager(
         var newAccessToken: OAuth2AccessToken? = null
         if (refreshToken != null) {
             val countDownLatch = CountDownLatch(1)
-            requestRefreshedAccessToken(refreshToken) { result ->
-                newAccessToken = result.getOrNull()
-                countDownLatch.countDown()
-            }
+            requestRefreshedAccessToken(
+                refreshToken,
+                object : OAuth2StateListener {
+                    override fun onSuccess(token: OAuth2AccessToken) {
+                        newAccessToken = token
+                        countDownLatch.countDown()
+                    }
+
+                    override fun onFailure(e: OAuth2Exception) {
+                        countDownLatch.countDown()
+                    }
+
+                    override fun onLoading() = Unit
+                },
+            )
             countDownLatch.await()
         }
 
@@ -118,7 +139,7 @@ class OAuth2AccessTokenManager(
      * @param code as described in [https://tools.ietf.org/html/rfc6749#section-4.1]
      * @param callback the result of the operation
      */
-    fun exchangeAndSaveTokenUsingCode(code: String, callback: (Result<OAuth2AccessToken>) -> Unit) {
+    fun exchangeAndSaveTokenUsingCode(code: String, listener: OAuth2StateListener) {
         api.requestAccessToken(
             url = tokenEndpoint,
             clientId = clientId,
@@ -126,7 +147,7 @@ class OAuth2AccessTokenManager(
             code = code,
             redirectUri = redirectUri,
             grantType = "authorization_code",
-            callback = callback,
+            listener = listener,
         )
     }
 
@@ -151,7 +172,8 @@ class OAuth2AccessTokenManager(
      * @param webView the [WebView] that will contain the login page of the app
      */
     @SuppressLint("SetJavaScriptEnabled")
-    fun setUpWebView(webView: WebView, callback: (Result<OAuth2AccessToken>) -> Unit) {
+    fun setUpWebView(webView: WebView, listener: OAuth2StateListener) {
+        listener.onLoading()
         webView.clearCache(true)
         webView.settings.javaScriptEnabled = true
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
@@ -162,14 +184,14 @@ class OAuth2AccessTokenManager(
             ): Boolean {
                 if (request.url.toString().startsWith(redirectUri)) {
                     request.url.getQueryParameter("code")?.let { code ->
-                        exchangeAndSaveTokenUsingCode(code, callback)
+                        exchangeAndSaveTokenUsingCode(code, listener)
                         return true
                     }
 
                     val error = request.url.getQueryParameter("error")
                     val errorDesc = request.url.getQueryParameter("error_description")
                     if (error != null || errorDesc != null) {
-                        callback.cancel("$error: $errorDesc")
+                        listener.cancel("$error: $errorDesc")
                         return true
                     }
                 }
@@ -178,7 +200,7 @@ class OAuth2AccessTokenManager(
         }
         webView.webChromeClient = object : WebChromeClient() {
             override fun onCloseWindow(window: WebView) {
-                callback.cancel("User closed the window")
+                listener.cancel("User closed the window")
             }
         }
 
@@ -193,7 +215,7 @@ class OAuth2AccessTokenManager(
      */
     private fun requestRefreshedAccessToken(
         refreshToken: String,
-        callback: (Result<OAuth2AccessToken>) -> Unit,
+        listener: OAuth2StateListener,
     ) {
         api.requestNewAccessToken(
             url = tokenEndpoint,
@@ -202,24 +224,20 @@ class OAuth2AccessTokenManager(
             redirectUri = redirectUri,
             grantType = "refresh_token",
             refreshToken = refreshToken,
-            callback = callback,
+            listener = listener,
         )
     }
 
     companion object {
-        fun ((Result<OAuth2AccessToken>) -> Unit).cancel(message: String) {
-            invoke(Result.failure(OAuth2Exception.UserCancelException(message)))
+        fun OAuth2StateListener.cancel(message: String) {
+            onFailure(OAuth2Exception.UserCancelException(message))
         }
 
-        fun ((Result<OAuth2AccessToken>) -> Unit).failure(
+        fun OAuth2StateListener.failure(
             message: String = "OAuth2 auth failed",
             cause: Throwable? = null,
         ) {
-            invoke(Result.failure(OAuth2Exception.OAuth2AuthException(message, cause)))
-        }
-
-        fun ((Result<OAuth2AccessToken>) -> Unit).success(token: OAuth2AccessToken) {
-            invoke(Result.success(token))
+            onFailure(OAuth2Exception.OAuth2AuthException(message, cause))
         }
     }
 }
