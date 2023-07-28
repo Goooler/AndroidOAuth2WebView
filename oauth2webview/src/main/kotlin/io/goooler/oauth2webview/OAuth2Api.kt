@@ -3,8 +3,7 @@ package io.goooler.oauth2webview
 import android.os.Handler
 import android.os.Looper
 import com.google.gson.Gson
-import io.goooler.oauth2webview.OAuth2AccessTokenManager.Companion.failure
-import io.goooler.oauth2webview.OAuth2AccessTokenManager.Companion.success
+import io.goooler.oauth2webview.OAuth2StateListener.Companion.failure
 import java.io.IOException
 import okhttp3.Call
 import okhttp3.FormBody
@@ -26,10 +25,10 @@ class OAuth2Api(private val client: OkHttpClient) {
         code: String,
         redirectUri: String,
         grantType: String,
-        callback: (Result<OAuth2AccessToken>) -> Unit,
+        listener: OAuth2StateListener,
     ) {
         val body = buildRequestBody(clientId, clientSecret, code, redirectUri, grantType, null)
-        post(url, body, callback)
+        post(url, body, listener)
     }
 
     fun requestNewAccessToken(
@@ -39,7 +38,7 @@ class OAuth2Api(private val client: OkHttpClient) {
         redirectUri: String,
         grantType: String,
         refreshToken: String,
-        callback: (Result<OAuth2AccessToken>) -> Unit,
+        listener: OAuth2StateListener,
     ) {
         val body = buildRequestBody(
             clientId,
@@ -49,19 +48,19 @@ class OAuth2Api(private val client: OkHttpClient) {
             grantType,
             refreshToken,
         )
-        post(url, body, callback)
+        post(url, body, listener)
     }
 
     private fun post(
         url: String,
         body: FormBody,
-        callback: (Result<OAuth2AccessToken>) -> Unit,
+        listener: OAuth2StateListener,
     ) {
         val request = Request.Builder()
             .url(url)
             .post(body)
             .build()
-        client.newCall(request).enqueue(HttpCallback(handler, gson, callback))
+        client.newCall(request).enqueue(HttpCallback(handler, gson, listener))
     }
 
     private fun buildRequestBody(
@@ -91,10 +90,10 @@ class OAuth2Api(private val client: OkHttpClient) {
     class HttpCallback(
         private val handler: Handler,
         private val gson: Gson,
-        private val callback: (Result<OAuth2AccessToken>) -> Unit,
+        private val listener: OAuth2StateListener,
     ) : okhttp3.Callback {
         override fun onFailure(call: Call, e: IOException) {
-            handler.post { callback.failure(cause = e) }
+            handler.post { listener.failure(cause = e) }
         }
 
         override fun onResponse(call: Call, response: Response) {
@@ -105,13 +104,13 @@ class OAuth2Api(private val client: OkHttpClient) {
                             response.body!!.string(),
                             OAuth2AccessToken::class.java,
                         )
-                        callback.success(token)
+                        listener.onSuccess(token)
                     } catch (e: Exception) {
-                        callback.failure(cause = e)
+                        listener.failure(cause = e)
                     }
                 } else {
                     val message = response.body?.string() ?: response.toString()
-                    callback.failure(message)
+                    listener.failure(message)
                 }
             }
         }

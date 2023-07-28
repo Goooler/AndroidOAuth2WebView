@@ -20,31 +20,43 @@ You can start the OAuth2 Authorization Code Grant by following these steps:
     val storageSharedPreferences = OAuth2AccessTokenStorageSharedPreferences(sharedPreferences)
     accessTokenManager = OAuth2AccessTokenManager(
         storage = storageSharedPreferences,
-        authorizationServerBaseURL = "https://api.instagram.com/oauth/",
+        authorizationEndpoint = AUTHORIZATION_ENDPOINT,
+        tokenEndpoint = TOKEN_ENDPOINT,
         clientID = CLIENT_ID,
         clientSecret = CLIENT_SECRET,
-        redirectURI = "http://samplecallback.com/",
+        redirectUri = "http://samplecallback.com/",
         scope = "basic"
     )
     ```
 3. Let the accessTokenManager set up the WebView
     ```kotlin
-    accessTokenManager.setUpWebView(webView,
-        loginFail = {
-            Log.e("Login", "Failure")
+    accessTokenManager.setUpWebView(
+        binding.webView,
+        object : OAuth2StateListener {
+            override fun onFailure(e: OAuth2Exception) {
+                Log.e("Login", "Failure")
+            }
+            override fun onSuccess(token: OAuth2AccessToken) {
+                Log.d("Login", "Success")
+            }
+
+            override fun onLoading() {
+                Log.e("Login", "Loading")
+            }
         },
-        loginSuccess = {
-            Log.d("Login", "Success")
-        }
     )
     ```
-4. On a successfull login you can access and use the Access Token anywhere:
+4. On a successful login you can access and use the Access Token anywhere:
     ```kotlin
     // Asynchronously
     accessTokenManager.retrieveValidAccessToken { result ->
-        result.onSuccess { storedToken ->
-            Log.d("Access Token", storedToken.accessToken)
+        override fun onSuccess(token: OAuth2AccessToken) {
+            Log.d("Access Token", token.accessToken)
         }
+
+        override fun onFailure(e: OAuth2Exception) = Unit
+
+        override fun onLoading() = Unit
     }
     ```
 
@@ -60,22 +72,3 @@ You can start the OAuth2 Authorization Code Grant by following these steps:
 ## Token Storage
 
 The OAuth2AccessTokenManager uses OAuth2AccessTokenStorage to store and retrieve the access token securely. A naive implementation is provided as example, OAuth2AccessTokenStorageSharedPreferences uses the shared preferences in MODE_PRIVATE to save it. You can implement OAuth2AccessTokenStorage as you wish with the level of security that you need.
-
-## OAuth Paths
-
-If the service that you're trying to access through OAuth 2 has different paths for the three operations needed for the authentication (Authorization, Access Token, Logout/Token Invalidation) you can provide new paths to:
-
-```kotlin
-/**
-* The URL path of the OAuth2 service where there is the webpage to show to user
-*/
-OAuth2AccessTokenManager.authorizationPath = "authorize"
-/**
-* The URL path of the OAuth2 service used to retrieve and refresh the access token
-*/
-OAuth2AccessTokenManager.tokenPath = "access_token"
-/**
-* The URL path of the OAuth2 service used to logout/invalidate the access token
-*/
-OAuth2AccessTokenManager.logoutPath = "logout"
-```
