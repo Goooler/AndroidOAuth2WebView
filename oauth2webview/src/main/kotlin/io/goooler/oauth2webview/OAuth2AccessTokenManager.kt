@@ -56,7 +56,7 @@ class OAuth2AccessTokenManager(
     /**
      * Returns a valid access token asynchronously
      * This call is asynchronous and can make a network call if the token needs to be refreshed
-     * @param callback the result of the operation
+     * @param listener the state of the operation
      */
     fun retrieveValidAccessToken(listener: OAuth2StateListener) {
         listener.onLoading()
@@ -140,7 +140,7 @@ class OAuth2AccessTokenManager(
     /**
      * Exchange the code received from the Authorization Server for the access token
      * @param code as described in [https://tools.ietf.org/html/rfc6749#section-4.1]
-     * @param callback the result of the operation
+     * @param listener the state of the operation
      */
     fun exchangeAndSaveTokenUsingCode(code: String, listener: OAuth2StateListener) {
         exchangeAndSaveToken(code, listener, true)
@@ -206,7 +206,7 @@ class OAuth2AccessTokenManager(
 
     /**
      * Make a request to the Authorization Server to refresh the access token
-     * @param callback the result of the operation
+     * @param listener the state of the operation
      */
     private fun requestRefreshedAccessToken(
         refreshToken: String,
