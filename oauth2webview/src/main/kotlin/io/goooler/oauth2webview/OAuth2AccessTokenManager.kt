@@ -165,13 +165,20 @@ class OAuth2AccessTokenManager(
                         exchangeAndSaveTokenUsingCode(code, callback)
                         return true
                     }
+
+                    val error = request.url.getQueryParameter("error")
+                    val errorDesc = request.url.getQueryParameter("error_description")
+                    if (error != null || errorDesc != null) {
+                        callback.cancel("$error: $errorDesc")
+                        return true
+                    }
                 }
                 return super.shouldOverrideUrlLoading(view, request)
             }
         }
         webView.webChromeClient = object : WebChromeClient() {
             override fun onCloseWindow(window: WebView) {
-                callback.cancel()
+                callback.cancel("User closed the window")
             }
         }
 
@@ -200,8 +207,8 @@ class OAuth2AccessTokenManager(
     }
 
     companion object {
-        fun ((Result<OAuth2AccessToken>) -> Unit).cancel() {
-            invoke(Result.failure(OAuth2Exception.UserCancelException("User closed the window")))
+        fun ((Result<OAuth2AccessToken>) -> Unit).cancel(message: String) {
+            invoke(Result.failure(OAuth2Exception.UserCancelException(message)))
         }
 
         fun ((Result<OAuth2AccessToken>) -> Unit).failure(
