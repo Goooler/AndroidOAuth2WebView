@@ -2,10 +2,10 @@ package com.example.oauth2webview
 
 import android.app.Application
 import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import io.goooler.oauth2webview.OAuth2AccessTokenManager
 import io.goooler.oauth2webview.OAuth2AccessTokenStorageSharedPreferences
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 
 class MyApplication : Application() {
 
@@ -18,9 +18,8 @@ class MyApplication : Application() {
 
         val sharedPreferences = getSharedPreferences("PREFERENCES", Context.MODE_PRIVATE)
         val storageSharedPreferences = OAuth2AccessTokenStorageSharedPreferences(sharedPreferences)
-        val logging = HttpLoggingInterceptor().apply { setLevel(HttpLoggingInterceptor.Level.BODY) }
         val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(logging)
+            .addInterceptor(ChuckerInterceptor(this))
             .build()
 
         accessTokenManager = OAuth2AccessTokenManager(
