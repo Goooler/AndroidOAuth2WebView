@@ -64,7 +64,6 @@ class OAuth2AccessTokenManager(
      * @param listener the state of the operation
      */
     fun retrieveValidAccessToken(listener: OAuth2StateListener) {
-        listener.onLoading()
         val accessToken = storage.getStoredAccessToken()
         when {
             accessToken == null -> {
@@ -148,7 +147,16 @@ class OAuth2AccessTokenManager(
      * @param listener the state of the operation
      */
     fun exchangeAndSaveTokenUsingCode(code: String, listener: OAuth2StateListener) {
-        exchangeAndSaveToken(code, listener, true)
+        listener.onLoading()
+        api.requestAccessToken(
+            url = tokenEndpoint,
+            clientId = clientId,
+            clientSecret = clientSecret,
+            code = code,
+            redirectUri = redirectUri,
+            grantType = "authorization_code",
+            listener = listener,
+        )
     }
 
     /**
@@ -173,7 +181,6 @@ class OAuth2AccessTokenManager(
      */
     @SuppressLint("SetJavaScriptEnabled")
     fun setUpWebView(webView: WebView, listener: OAuth2StateListener) {
-        listener.onLoading()
         webView.clearCache(true)
         webView.settings.javaScriptEnabled = true
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
@@ -184,7 +191,7 @@ class OAuth2AccessTokenManager(
             ): Boolean {
                 if (request.url.toString().startsWith(redirectUri)) {
                     request.url.getQueryParameter("code")?.let { code ->
-                        exchangeAndSaveToken(code, listener, false)
+                        exchangeAndSaveTokenUsingCode(code, listener)
                         return true
                     }
 
@@ -217,6 +224,7 @@ class OAuth2AccessTokenManager(
         refreshToken: String,
         listener: OAuth2StateListener,
     ) {
+        listener.onLoading()
         api.requestNewAccessToken(
             url = tokenEndpoint,
             clientId = clientId,
@@ -224,21 +232,6 @@ class OAuth2AccessTokenManager(
             redirectUri = redirectUri,
             grantType = "refresh_token",
             refreshToken = refreshToken,
-            listener = listener,
-        )
-    }
-
-    private fun exchangeAndSaveToken(code: String, listener: OAuth2StateListener, needLoading: Boolean) {
-        if (needLoading) {
-            listener.onLoading()
-        }
-        api.requestAccessToken(
-            url = tokenEndpoint,
-            clientId = clientId,
-            clientSecret = clientSecret,
-            code = code,
-            redirectUri = redirectUri,
-            grantType = "authorization_code",
             listener = listener,
         )
     }
