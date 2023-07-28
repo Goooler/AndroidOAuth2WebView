@@ -59,6 +59,7 @@ class OAuth2AccessTokenManager(
      * @param callback the result of the operation
      */
     fun retrieveValidAccessToken(listener: OAuth2StateListener) {
+        listener.onLoading()
         val accessToken = storage.getStoredAccessToken()
         when {
             accessToken == null -> {
@@ -142,15 +143,7 @@ class OAuth2AccessTokenManager(
      * @param callback the result of the operation
      */
     fun exchangeAndSaveTokenUsingCode(code: String, listener: OAuth2StateListener) {
-        api.requestAccessToken(
-            url = tokenEndpoint,
-            clientId = clientId,
-            clientSecret = clientSecret,
-            code = code,
-            redirectUri = redirectUri,
-            grantType = "authorization_code",
-            listener = listener,
-        )
+        exchangeAndSaveToken(code, listener, true)
     }
 
     /**
@@ -186,7 +179,7 @@ class OAuth2AccessTokenManager(
             ): Boolean {
                 if (request.url.toString().startsWith(redirectUri)) {
                     request.url.getQueryParameter("code")?.let { code ->
-                        exchangeAndSaveTokenUsingCode(code, listener)
+                        exchangeAndSaveToken(code, listener, false)
                         return true
                     }
 
@@ -226,6 +219,21 @@ class OAuth2AccessTokenManager(
             redirectUri = redirectUri,
             grantType = "refresh_token",
             refreshToken = refreshToken,
+            listener = listener,
+        )
+    }
+
+    private fun exchangeAndSaveToken(code: String, listener: OAuth2StateListener, needLoading: Boolean) {
+        if (needLoading) {
+            listener.onLoading()
+        }
+        api.requestAccessToken(
+            url = tokenEndpoint,
+            clientId = clientId,
+            clientSecret = clientSecret,
+            code = code,
+            redirectUri = redirectUri,
+            grantType = "authorization_code",
             listener = listener,
         )
     }
