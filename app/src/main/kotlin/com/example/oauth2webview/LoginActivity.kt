@@ -29,7 +29,8 @@ class LoginActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(e: OAuth2Exception) {
-                    Toast.makeText(this@LoginActivity, "LOGIN FAILURE", Toast.LENGTH_SHORT).show()
+                    val message = if (e is OAuth2Exception.UserCancelException) e.message else "LOGIN FAILURE"
+                    Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
                     e.printStackTrace()
 
                     finish()
@@ -39,5 +40,4 @@ class LoginActivity : AppCompatActivity() {
             },
         )
     }
-}
 }
