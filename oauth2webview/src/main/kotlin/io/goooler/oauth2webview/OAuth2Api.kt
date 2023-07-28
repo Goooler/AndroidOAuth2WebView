@@ -3,7 +3,7 @@ package io.goooler.oauth2webview
 import android.os.Handler
 import android.os.Looper
 import com.google.gson.Gson
-import io.goooler.oauth2webview.OAuth2AccessTokenManager.Companion.failure
+import io.goooler.oauth2webview.OAuth2StateListener.Companion.failure
 import java.io.IOException
 import okhttp3.Call
 import okhttp3.FormBody

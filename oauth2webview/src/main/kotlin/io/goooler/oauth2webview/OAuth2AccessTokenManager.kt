@@ -6,6 +6,8 @@ import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import io.goooler.oauth2webview.OAuth2StateListener.Companion.cancel
+import io.goooler.oauth2webview.OAuth2StateListener.Companion.failure
 import java.net.URL
 import java.util.concurrent.CountDownLatch
 import okhttp3.OkHttpClient
@@ -226,18 +228,5 @@ class OAuth2AccessTokenManager(
             refreshToken = refreshToken,
             listener = listener,
         )
-    }
-
-    companion object {
-        fun OAuth2StateListener.cancel(message: String) {
-            onFailure(OAuth2Exception.UserCancelException(message))
-        }
-
-        fun OAuth2StateListener.failure(
-            message: String = "OAuth2 auth failed",
-            cause: Throwable? = null,
-        ) {
-            onFailure(OAuth2Exception.OAuth2AuthException(message, cause))
-        }
     }
 }
