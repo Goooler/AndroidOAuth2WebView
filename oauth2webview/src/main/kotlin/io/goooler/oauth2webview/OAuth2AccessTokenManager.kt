@@ -204,6 +204,10 @@ class OAuth2AccessTokenManager(
                 }
                 return super.shouldOverrideUrlLoading(view, request)
             }
+
+            override fun onPageFinished(view: WebView, url: String) {
+                listener.onPageFinished(url)
+            }
         }
         webView.webChromeClient = object : WebChromeClient() {
             override fun onCloseWindow(window: WebView) {

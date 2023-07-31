@@ -8,6 +8,8 @@ interface OAuth2StateListener {
 
     fun onLoading()
 
+    fun onPageFinished(url: String) = Unit
+
     companion object {
         fun OAuth2StateListener.cancel(message: String) {
             onFailure(OAuth2Exception.UserCancelException(message))
