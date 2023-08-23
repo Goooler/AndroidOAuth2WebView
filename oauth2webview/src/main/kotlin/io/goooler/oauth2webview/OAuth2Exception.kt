@@ -11,3 +11,8 @@ sealed class OAuth2Exception private constructor(message: String, cause: Throwab
      */
     class OAuth2AuthException internal constructor(message: String, cause: Throwable?) : OAuth2Exception(message, cause)
 }
+
+enum class State {
+    success,
+    failure,
+}
