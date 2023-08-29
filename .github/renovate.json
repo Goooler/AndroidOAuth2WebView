@@ -8,7 +8,6 @@
     "packageRules": [
         {
             "groupName": "AGP",
-            "groupSlug": "agp",
             "matchPackagePatterns": [
                 "com.android.*"
             ]
