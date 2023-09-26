@@ -2,6 +2,7 @@ package io.goooler.oauth2webview
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.os.Build
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -190,12 +191,19 @@ class OAuth2AccessTokenManager(
                 view: WebView,
                 request: WebResourceRequest,
             ): Boolean {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                    return super.shouldOverrideUrlLoading(view, request)
+                }
                 val should = shouldOverrideUrlLoading(request.url, listener)
                 return if (should) true else super.shouldOverrideUrlLoading(view, request)
             }
 
             // For API level < 26
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                // For API level >= 26
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    return super.shouldOverrideUrlLoading(view, url)
+                }
                 val should = shouldOverrideUrlLoading(Uri.parse(url), listener)
                 @Suppress("DEPRECATION")
                 return if (should) true else super.shouldOverrideUrlLoading(view, url)
