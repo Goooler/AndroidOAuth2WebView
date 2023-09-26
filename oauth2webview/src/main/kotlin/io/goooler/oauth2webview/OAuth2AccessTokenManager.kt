@@ -185,24 +185,20 @@ class OAuth2AccessTokenManager(
         webView.settings.javaScriptEnabled = true
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
         webView.webViewClient = object : WebViewClient() {
+            // For API level >= 26
             override fun shouldOverrideUrlLoading(
                 view: WebView,
                 request: WebResourceRequest,
             ): Boolean {
-                if (request.url.toString().startsWith(redirectUri)) {
-                    request.url.getQueryParameter("code")?.let { code ->
-                        exchangeAndSaveTokenUsingCode(code, listener)
-                        return true
-                    }
+                val should = shouldOverrideUrlLoading(request.url, listener)
+                return if (should) true else super.shouldOverrideUrlLoading(view, request)
+            }
 
-                    val error = request.url.getQueryParameter("error")
-                    val errorDesc = request.url.getQueryParameter("error_description")
-                    if (error != null || errorDesc != null) {
-                        listener.cancel("$error: $errorDesc")
-                        return true
-                    }
-                }
-                return super.shouldOverrideUrlLoading(view, request)
+            // For API level < 26
+            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                val should = shouldOverrideUrlLoading(Uri.parse(url), listener)
+                @Suppress("DEPRECATION")
+                return if (should) true else super.shouldOverrideUrlLoading(view, url)
             }
 
             override fun onPageFinished(view: WebView, url: String) {
@@ -218,6 +214,23 @@ class OAuth2AccessTokenManager(
         // Load the authorization URL
         val url = authorizationUrl.toString()
         webView.loadUrl(url)
+    }
+
+    private fun shouldOverrideUrlLoading(url: Uri, listener: OAuth2StateListener): Boolean {
+        if (url.toString().startsWith(redirectUri)) {
+            url.getQueryParameter("code")?.let { code ->
+                exchangeAndSaveTokenUsingCode(code, listener)
+                return true
+            }
+
+            val error = url.getQueryParameter("error")
+            val errorDesc = url.getQueryParameter("error_description")
+            if (error != null || errorDesc != null) {
+                listener.cancel("$error: $errorDesc")
+                return true
+            }
+        }
+        return false
     }
 
     /**
