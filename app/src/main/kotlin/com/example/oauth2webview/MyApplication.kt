@@ -6,6 +6,7 @@ import android.util.Log
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import io.goooler.oauth2webview.OAuth2AccessTokenManager
 import io.goooler.oauth2webview.OAuth2AccessTokenStorageSharedPreferences
+import java.util.stream.Stream
 import okhttp3.OkHttpClient
 
 class MyApplication : Application() {
@@ -44,11 +45,11 @@ class MyApplication : Application() {
             prompt = "select_account"
         }
 
-        val scopes = listOf(
+        val scopes = Stream.of(
             "https://outlook.office.com/IMAP.AccessAsUser.All",
             "https://outlook.office.com/SMTP.Send",
             "offline_access",
-        ).stream().toList()
+        ).toList()
         scopes.forEach {
             Log.d("MyApplication", "scope: $it")
         }
