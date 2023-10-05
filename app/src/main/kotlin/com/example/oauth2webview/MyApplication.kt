@@ -2,6 +2,7 @@ package com.example.oauth2webview
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import io.goooler.oauth2webview.OAuth2AccessTokenManager
 import io.goooler.oauth2webview.OAuth2AccessTokenStorageSharedPreferences
@@ -41,6 +42,15 @@ class MyApplication : Application() {
             client = okHttpClient,
         ).apply {
             prompt = "select_account"
+        }
+
+        val scopes = listOf(
+            "https://outlook.office.com/IMAP.AccessAsUser.All",
+            "https://outlook.office.com/SMTP.Send",
+            "offline_access",
+        ).stream().toList()
+        scopes.forEach {
+            Log.d("MyApplication", "scope: $it")
         }
     }
 }
