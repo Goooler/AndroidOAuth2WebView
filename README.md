@@ -1,5 +1,7 @@
 # Android OAuth2 Authorization Code Grant
 
+[![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/io.github.goooler.oauth2webview/oauth2webview?&server=https://s01.oss.sonatype.org/)](https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/goooler/oauth2webview/oauth2webview)
+
 This is a fork of [AlessandroDeFrancesco/AndroidOAuth2WebView](https://github.com/AlessandroDeFrancesco/AndroidOAuth2WebView), wants to be the easiest and fastest setup of the OAuth2 Authorization Code Grant flow for an Android application.
 
 The only external library used is OkHttp to make requests to the Authorization Server.
