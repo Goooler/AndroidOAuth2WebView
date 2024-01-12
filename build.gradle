@@ -24,15 +24,6 @@ subprojects {
         }
     }
 
-    plugins.withId('com.android.library') {
-        plugins.apply('com.vanniktech.maven.publish')
-
-        mavenPublishing {
-            publishToMavenCentral('S01')
-            signAllPublications()
-        }
-    }
-
     apply plugin: 'com.diffplug.spotless'
     spotless {
         kotlin {
