@@ -34,7 +34,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/actions/setup-gradle@v3
       - run: ./gradlew spotlessCheck
 
   build:
@@ -47,7 +47,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-home-cache-cleanup: true
       - run: ./gradlew assembleRelease
@@ -62,7 +62,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/actions/setup-gradle@v3
       - name: Execute Gradle publish
         # Disable CC due to https://github.com/gradle/gradle/issues/22779
         run: ./gradlew publish --no-configuration-cache
