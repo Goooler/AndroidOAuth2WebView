@@ -26,4 +26,4 @@ dependencyResolutionManagement {
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-include ':app', ':oauth2webview'
+include(":app", ":oauth2webview")
