@@ -1,15 +1,15 @@
 {
     "labels": [
-        "dependencies"
+        "dependencies",
     ],
     "extends": [
-        "config:base"
+        "config:base",
     ],
     "packageRules": [
         {
             "groupName": "AGP",
             "matchPackagePatterns": [
-                "com.android.*"
+                "com.android.*",
             ]
         }
     ]
