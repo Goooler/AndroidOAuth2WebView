@@ -19,7 +19,7 @@ class MyApplication : Application() {
         val sharedPreferences = getSharedPreferences("PREFERENCES", Context.MODE_PRIVATE)
         val storageSharedPreferences = OAuth2AccessTokenStorageSharedPreferences(sharedPreferences)
         val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(ChuckerInterceptor(this))
+            .addNetworkInterceptor(ChuckerInterceptor(this))
             .build()
 
         accessTokenManager = OAuth2AccessTokenManager(
